@@ -64,7 +64,7 @@ export default function Home({ packages, djs, categories, goTo, goToQuote, goToD
             <h2>What we bring</h2>
             <p style={{ marginTop: 8 }}>
               {activeCategory
-                ? `${activeCategory.name} — tap an option, or tap the middle to go back.`
+                ? `${activeCategory.name} — tap an option, or hit back.`
                 : 'DJs, equipment, sound and lighting — tap one to see how it breaks down.'}
             </p>
             {!activeCategory ? (
@@ -78,33 +78,36 @@ export default function Home({ packages, djs, categories, goTo, goToQuote, goToD
                   >
                     <span className="bubble-icon" aria-hidden="true">{iconFor(c.slug)}</span>
                     {c.name}
+                    <span className="bubble-hint" aria-hidden="true">+</span>
                   </button>
                 ))}
               </div>
             ) : (
               <div className="bubble-cluster">
                 <button
-                  className="bubble bubble-center"
+                  className="bubble-fan-header"
                   onClick={() => setActiveSlug(null)}
                   aria-label={`Close ${activeCategory.name}`}
                 >
                   <span className="bubble-icon" aria-hidden="true">{iconFor(activeCategory.slug)}</span>
                   {activeCategory.name}
-                  <span className="bubble-center-close" aria-hidden="true">✕</span>
+                  <span className="bubble-fan-header-x" aria-hidden="true">✕</span>
                 </button>
-                {(SUB_ITEMS[activeCategory.slug] || []).map((label, i, arr) => (
-                  <button
-                    key={label}
-                    className="bubble-sub"
-                    style={{
-                      '--angle': `${(360 / arr.length) * i - 90}deg`,
-                      '--sub-delay': `${i * 0.06}s`,
-                    }}
-                    onClick={() => goToQuote()}
-                  >
-                    {label}
-                  </button>
-                ))}
+                <div className="bubble-fan">
+                  {(SUB_ITEMS[activeCategory.slug] || []).map((label, i) => (
+                    <button
+                      key={label}
+                      className="bubble-fan-sub"
+                      style={{ '--sub-delay': `${i * 0.05}s` }}
+                      onClick={() => goToQuote([activeCategory.slug])}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <button type="button" className="bubble-back" onClick={() => setActiveSlug(null)}>
+                  ← Back
+                </button>
               </div>
             )}
           </div>

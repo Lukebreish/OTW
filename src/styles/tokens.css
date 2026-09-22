@@ -231,6 +231,7 @@ a:hover { border-bottom-color: var(--amber); }
   padding: var(--sp-6) var(--sp-2);
 }
 .bubble {
+  position: relative;
   --float-delay: 0s;
   width: 152px; height: 152px;
   border-radius: 50%;
@@ -249,6 +250,7 @@ a:hover { border-bottom-color: var(--amber); }
   transition: border-color 0.2s, background 0.2s, transform 0.2s;
 }
 .bubble:hover { border-color: var(--violet); background: var(--violet-tint); transform: translateY(-4px); }
+.bubble:active { transform: translateY(-1px) scale(0.97); }
 .bubble.active { border-color: var(--violet); background: var(--violet-tint); }
 .bubble-icon { font-size: 26px; }
 @keyframes bubble-float {
@@ -258,66 +260,112 @@ a:hover { border-bottom-color: var(--amber); }
 @media (prefers-reduced-motion: reduce) { .bubble { animation: none; } }
 @media (max-width: 560px) { .bubble { width: 120px; height: 120px; font-size: 12.5px; } .bubble-icon { font-size: 22px; } }
 
-/* Bubble cluster (tap a category to expand its options, Apple-Watch style) */
-
-.bubble-cluster {
-  position: relative;
-  min-height: 340px;
-  width: 100%;
+.bubble-hint {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--violet);
+  color: var(--violet);
+  font-size: 12px;
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
-.bubble-center {
+
+/* Bubble cluster — arc/fan reveal. Tap a category; it becomes a pill
+   header and its options fan open below as pills (flex-wrap, so it
+   reflows cleanly at any width or item count — no fixed-radius math
+   to break on a small phone). */
+
+.bubble-cluster {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--sp-4) 0 var(--sp-2);
+}
+.bubble-fan-header {
   position: relative;
   z-index: 2;
-  border-color: var(--violet);
-  background: var(--violet-tint);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1.5px solid var(--violet);
+  border-radius: 26px;
+  padding: 12px 20px 12px 16px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--font-body);
+  cursor: pointer;
+  box-shadow: 0 8px 26px -10px rgba(139, 123, 255, 0.55);
+  animation: bubble-fan-pop 0.3s ease backwards;
 }
-.bubble-center-close {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  font-size: 11px;
-  color: var(--ink-soft);
+.bubble-fan-header .bubble-icon { font-size: 19px; }
+.bubble-fan-header-x { margin-left: 2px; color: var(--ink-soft); font-size: 13px; font-weight: 600; }
+.bubble-fan-header:hover .bubble-fan-header-x { color: var(--ink); }
+
+.bubble-fan {
+  width: 100%;
+  max-width: 480px;
+  margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 10px;
 }
-.bubble-sub {
-  --radius: 118px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
+.bubble-fan-sub {
+  min-height: 44px;
+  border-radius: 24px;
   border: 1px solid var(--violet);
   background: var(--surface);
   color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  padding: 12px 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  font-size: 12.5px;
-  font-weight: 600;
-  line-height: 1.25;
-  padding: 10px;
   cursor: pointer;
-  transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--radius)) rotate(calc(-1 * var(--angle)));
-  animation: bubble-pop 0.35s ease backwards;
+  transition: border-color 0.15s, background 0.15s;
+  animation: bubble-fan-pop 0.32s cubic-bezier(0.2, 1.3, 0.4, 1) backwards;
   animation-delay: var(--sub-delay, 0s);
-  transition: border-color 0.2s, background 0.2s;
 }
-.bubble-sub:hover { border-color: var(--violet); background: var(--violet-tint); }
-@keyframes bubble-pop {
-  from { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0) rotate(calc(-1 * var(--angle))); }
-  to { opacity: 1; transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--radius)) rotate(calc(-1 * var(--angle))); }
+.bubble-fan-sub:hover { background: var(--violet-tint); }
+.bubble-fan-sub:active { transform: scale(0.96); background: var(--violet-tint); }
+@keyframes bubble-fan-pop {
+  from { opacity: 0; transform: scale(0.6) translateY(-6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
-@media (prefers-reduced-motion: reduce) { .bubble-sub { animation: none; } }
-@media (max-width: 640px) {
-  .bubble-cluster { min-height: 280px; }
-  .bubble-sub { --radius: 96px; width: 84px; height: 84px; font-size: 11px; }
+@media (prefers-reduced-motion: reduce) { .bubble-fan-header, .bubble-fan-sub { animation: none; } }
+
+.bubble-back {
+  margin-top: 22px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 20px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 18px;
+  cursor: pointer;
 }
-@media (max-width: 400px) {
-  .bubble-sub { --radius: 82px; width: 72px; height: 72px; font-size: 9.5px; padding: 6px; }
+.bubble-back:hover { color: var(--ink); border-color: var(--ink-soft); }
+
+.bubble-fan-header:focus-visible,
+.bubble-fan-sub:focus-visible,
+.bubble-back:focus-visible,
+.bubble:focus-visible {
+  outline-color: var(--violet);
 }
 
 .bubble-detail { margin-top: var(--sp-6); }
@@ -339,25 +387,55 @@ a:hover { border-bottom-color: var(--amber); }
 .package-includes li { color: var(--ink-soft); font-size: 14.5px; padding-left: 18px; position: relative; }
 .package-includes li::before { content: '—'; position: absolute; left: 0; color: var(--ink-soft); }
 
-/* DJs --------------------------------------------------------------- */
+/* DJs — grid + in-place profile expand (ported from the Studio Margarita
+   "Meet the Artist" pattern: click a face, story expands below in place,
+   no navigation / separate URL) --------------------------------------- */
 
 .dj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--sp-3); margin-top: var(--sp-4); }
-.dj-card { cursor: pointer; text-align: left; background: none; border: none; padding: 0; color: inherit; width: 100%; }
+.dj-card { cursor: pointer; text-align: left; background: none; border: none; padding: 12px 0; color: inherit; width: 100%; transition: transform 0.16s ease; }
+.dj-card:hover { transform: translateY(-3px); }
 .dj-photo {
   aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--rule);
   background: var(--surface-2); display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display); font-size: 34px; color: var(--ink-soft);
-  overflow: hidden;
+  overflow: hidden; transition: border-color 0.16s ease;
 }
 .dj-card:hover .dj-photo, .dj-card.active .dj-photo { border-color: var(--amber); }
-.dj-name { margin-top: 12px; font-weight: 600; font-size: 16px; }
+.dj-card.active .dj-name { color: var(--amber); }
+.dj-name { margin-top: 12px; font-weight: 600; font-size: 16px; transition: color 0.16s ease; }
 .dj-meta { color: var(--ink-soft); font-size: 13.5px; }
 .dj-genres { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .dj-genre-tag { font-size: 11.5px; color: var(--ink-soft); border: 1px solid var(--rule); border-radius: var(--radius); padding: 3px 8px; }
 
-.dj-profile { margin-top: var(--sp-4); display: grid; grid-template-columns: 220px 1fr; gap: var(--sp-4); }
-@media (max-width: 640px) { .dj-profile { grid-template-columns: 1fr; } }
-.dj-profile-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--sp-2); }
+.dj-profile-panel { margin-top: var(--sp-6); border-top: 2px solid var(--rule); padding-top: var(--sp-4); animation: dj-panel-in 0.3s ease backwards; }
+@keyframes dj-panel-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .dj-profile-panel { animation: none; } }
+
+.dj-profile-head { display: grid; grid-template-columns: 260px 1fr; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; }
+@media (max-width: 720px) { .dj-profile-head { grid-template-columns: 1fr; } }
+
+.dj-profile-portrait {
+  background: var(--amber-tint); border-right: 1px solid var(--rule);
+  padding: var(--sp-6) var(--sp-4); display: flex; flex-direction: column;
+  align-items: center; text-align: center; justify-content: center;
+}
+@media (max-width: 720px) { .dj-profile-portrait { border-right: none; border-bottom: 1px solid var(--rule); } }
+.dj-profile-ring { width: 148px; height: 148px; border-radius: 50%; border: 3px solid var(--amber); padding: 5px; background: var(--surface); }
+.dj-profile-ring img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+.dj-profile-ring-fallback {
+  width: 100%; height: 100%; border-radius: 50%; background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 44px; color: var(--ink-soft);
+}
+.dj-profile-name { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin-top: var(--sp-2); }
+.dj-profile-location { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber-deep); font-weight: 600; margin-top: 4px; }
+
+.dj-profile-note { padding: var(--sp-4) var(--sp-4); display: flex; flex-direction: column; }
+.dj-profile-eyebrow { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 10px; }
+.dj-profile-quote { margin: 0; font-size: 18px; line-height: 1.55; color: var(--ink); font-family: var(--font-body); font-weight: 400; max-width: 60ch; }
+.dj-profile-close { align-self: flex-start; margin-top: 16px; background: none; border: none; color: var(--ink-soft); font-size: 13px; cursor: pointer; padding: 0; }
+.dj-profile-close:hover { color: var(--ink); }
+.dj-profile-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--sp-3); }
 .dj-profile-links a { font-size: 14px; }
 
 /* Forms --------------------------------------------------------------- */
