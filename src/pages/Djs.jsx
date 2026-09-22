@@ -48,13 +48,6 @@ export default function Djs({ djs, initialSelected, onDone, goTo }) {
                 </div>
                 <div className="dj-name">{dj.name}</div>
                 <div className="dj-meta">{dj.location}</div>
-                {Array.isArray(dj.genres) && dj.genres.length > 0 && (
-                  <div className="dj-genres">
-                    {dj.genres.slice(0, 3).map((g) => (
-                      <span key={g} className="dj-genre-tag">{g}</span>
-                    ))}
-                  </div>
-                )}
               </button>
             ))}
           </div>

@@ -473,53 +473,56 @@ a:hover { border-bottom-color: var(--amber); }
 .package-includes li { color: var(--ink-soft); font-size: 14.5px; padding-left: 18px; position: relative; }
 .package-includes li::before { content: '—'; position: absolute; left: 0; color: var(--ink-soft); }
 
-/* DJs — grid + in-place profile expand (ported from the Studio Margarita
-   "Meet the Artist" pattern: click a face, story expands below in place,
-   no navigation / separate URL) --------------------------------------- */
+/* DJs — grid + in-place profile expand, visually matched to the
+   Studio Margarita "Artists" directory pattern (studiomargarita.art/#artists),
+   translated to OTW's own dark palette and amber accent ----------------- */
 
-.dj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--sp-3); margin-top: var(--sp-4); }
-.dj-card { cursor: pointer; text-align: left; background: none; border: none; padding: 12px 0; color: inherit; width: 100%; transition: transform 0.16s ease; }
-.dj-card:hover { transform: translateY(-3px); }
+.dj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 32px; margin-top: var(--sp-4); }
+.dj-card { display: flex; flex-direction: column; align-items: center; text-align: center; background: none; border: none; padding: 12px; font: inherit; color: inherit; cursor: pointer; border-radius: 0; }
 .dj-photo {
-  aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--rule);
-  background: var(--surface-2); display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 34px; color: var(--ink-soft);
-  overflow: hidden; transition: border-color 0.16s ease;
+  width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--amber);
+  padding: 4px; margin-bottom: 12px; background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 30px; color: var(--ink-soft);
+  overflow: hidden; transition: transform 160ms ease, border-color 160ms ease;
 }
-.dj-card:hover .dj-photo, .dj-card.active .dj-photo { border-color: var(--amber); }
+.dj-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+.dj-card:hover .dj-photo { transform: translateY(-3px); }
+.dj-card.active .dj-photo { border-color: var(--amber-deep); }
 .dj-card.active .dj-name { color: var(--amber); }
-.dj-name { margin-top: 12px; font-weight: 600; font-size: 16px; transition: color 0.16s ease; }
-.dj-meta { color: var(--ink-soft); font-size: 13.5px; }
+.dj-name { font-size: 16px; font-weight: 500; letter-spacing: -0.02em; transition: color 0.16s ease; }
+.dj-meta { font-size: 11px; color: var(--ink-soft); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 3px; }
 .dj-genres { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .dj-genre-tag { font-size: 11.5px; color: var(--ink-soft); border: 1px solid var(--rule); border-radius: var(--radius); padding: 3px 8px; }
 
-.dj-profile-panel { margin-top: var(--sp-6); border-top: 2px solid var(--rule); padding-top: var(--sp-4); animation: dj-panel-in 0.3s ease backwards; }
+.dj-profile-panel { margin-top: 44px; border-top: 2px solid var(--ink); animation: dj-panel-in 0.3s ease backwards; }
 @keyframes dj-panel-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @media (prefers-reduced-motion: reduce) { .dj-profile-panel { animation: none; } }
 
-.dj-profile-head { display: grid; grid-template-columns: 260px 1fr; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; }
+.dj-profile-head { display: grid; grid-template-columns: 260px 1fr; border: 2px solid var(--ink); border-top: none; }
 @media (max-width: 720px) { .dj-profile-head { grid-template-columns: 1fr; } }
 
 .dj-profile-portrait {
-  background: var(--amber-tint); border-right: 1px solid var(--rule);
-  padding: var(--sp-6) var(--sp-4); display: flex; flex-direction: column;
+  background: var(--amber-tint); border-right: 2px solid var(--ink);
+  padding: 40px 32px; display: flex; flex-direction: column;
   align-items: center; text-align: center; justify-content: center;
 }
-@media (max-width: 720px) { .dj-profile-portrait { border-right: none; border-bottom: 1px solid var(--rule); } }
-.dj-profile-ring { width: 148px; height: 148px; border-radius: 50%; border: 3px solid var(--amber); padding: 5px; background: var(--surface); }
+@media (max-width: 720px) { .dj-profile-portrait { border-right: none; border-bottom: 2px solid var(--ink); } }
+.dj-profile-ring { width: 150px; height: 150px; border-radius: 50%; border: 3px solid var(--amber); padding: 5px; margin-bottom: 18px; background: var(--surface); }
 .dj-profile-ring img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
 .dj-profile-ring-fallback {
   width: 100%; height: 100%; border-radius: 50%; background: var(--surface-2);
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display); font-size: 44px; color: var(--ink-soft);
 }
-.dj-profile-name { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin-top: var(--sp-2); }
-.dj-profile-location { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber-deep); font-weight: 600; margin-top: 4px; }
+.dj-profile-name { font-family: inherit; font-weight: 500; font-size: 22px; letter-spacing: -0.02em; margin-bottom: 3px; }
+.dj-profile-location { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); font-weight: 500; }
 
-.dj-profile-note { padding: var(--sp-4) var(--sp-4); display: flex; flex-direction: column; }
-.dj-profile-eyebrow { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 10px; }
-.dj-profile-quote { margin: 0; font-size: 18px; line-height: 1.55; color: var(--ink); font-family: var(--font-body); font-weight: 400; max-width: 60ch; }
-.dj-profile-close { align-self: flex-start; margin-top: 16px; background: none; border: none; color: var(--ink-soft); font-size: 13px; cursor: pointer; padding: 0; }
+.dj-profile-note { padding: 40px 44px; display: flex; flex-direction: column; }
+@media (max-width: 720px) { .dj-profile-note { padding: 32px 24px; } }
+.dj-profile-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: var(--amber); margin-bottom: 16px; }
+.dj-profile-quote { margin: 0; font-size: 18px; line-height: 1.55; letter-spacing: -0.005em; color: var(--ink); font-family: var(--font-body); font-weight: 400; max-width: 60ch; }
+.dj-profile-close { align-self: flex-start; margin-top: 18px; background: none; border: none; color: var(--ink-soft); font-size: 13px; cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 3px; }
 .dj-profile-close:hover { color: var(--ink); }
 .dj-profile-links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--sp-3); }
 .dj-profile-links a { font-size: 14px; }
