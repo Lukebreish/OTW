@@ -1,4 +1,18 @@
+import { useState } from 'react';
 import { iconFor } from '../lib/categoryIcons.js';
+
+const BUBBLE_SLUGS = ['djs', 'dj-equipment', 'sound', 'lighting'];
+
+const SUB_ITEMS = {
+  djs: ['Commercial music', 'Underground', 'Wedding', 'Corporate'],
+  'dj-equipment': ['DJ controller', 'Club standard gear', 'Custom setup'],
+  sound: ['2 Tops', '2 Tops + 1 Subs', 'Full range'],
+  lighting: [
+    '2 × LED uplights / wash lights',
+    '2 × moving heads + LED wash/uplights',
+    'Full Event Lighting',
+  ],
+};
 
 const STEPS = [
   ['Tell us about it', 'Party, wedding, corporate, club night — whatever it is, start with a few basics.'],
@@ -10,6 +24,11 @@ const STEPS = [
 export default function Home({ packages, djs, categories, goTo, goToQuote, goToDj }) {
   const previewDjs = djs.slice(0, 4);
   const previewPackages = packages.slice(0, 3);
+  const [activeSlug, setActiveSlug] = useState(null);
+  const bubbleCategories = BUBBLE_SLUGS
+    .map((slug) => categories.find((c) => c.slug === slug))
+    .filter(Boolean);
+  const activeCategory = bubbleCategories.find((c) => c.slug === activeSlug) || null;
 
   return (
     <>
@@ -43,24 +62,55 @@ export default function Home({ packages, djs, categories, goTo, goToQuote, goToD
         </div>
       </section>
 
-      {categories.length > 0 && (
+      {bubbleCategories.length > 0 && (
         <section className="section-tight">
           <div className="section-wide">
             <h2>What we bring</h2>
-            <p style={{ marginTop: 8 }}>DJs, equipment, sound, lighting, installation and the crew to run it.</p>
-            <div className="bubble-field" style={{ paddingTop: 32 }}>
-              {categories.map((c, i) => (
+            <p style={{ marginTop: 8 }}>
+              {activeCategory
+                ? `${activeCategory.name} — tap an option, or tap the middle to go back.`
+                : 'DJs, equipment, sound and lighting — tap one to see how it breaks down.'}
+            </p>
+            {!activeCategory ? (
+              <div className="bubble-field" style={{ paddingTop: 32 }}>
+                {bubbleCategories.map((c, i) => (
+                  <button
+                    key={c.id}
+                    className="bubble"
+                    style={{ '--float-delay': `${(i % 5) * 0.6}s` }}
+                    onClick={() => setActiveSlug(c.slug)}
+                  >
+                    <span className="bubble-icon" aria-hidden="true">{iconFor(c.slug)}</span>
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="bubble-cluster">
                 <button
-                  key={c.id}
-                  className="bubble"
-                  style={{ '--float-delay': `${(i % 5) * 0.6}s` }}
-                  onClick={() => goTo('services')}
+                  className="bubble bubble-center"
+                  onClick={() => setActiveSlug(null)}
+                  aria-label={`Close ${activeCategory.name}`}
                 >
-                  <span className="bubble-icon" aria-hidden="true">{iconFor(c.slug)}</span>
-                  {c.name}
+                  <span className="bubble-icon" aria-hidden="true">{iconFor(activeCategory.slug)}</span>
+                  {activeCategory.name}
+                  <span className="bubble-center-close" aria-hidden="true">✕</span>
                 </button>
-              ))}
-            </div>
+                {(SUB_ITEMS[activeCategory.slug] || []).map((label, i, arr) => (
+                  <button
+                    key={label}
+                    className="bubble-sub"
+                    style={{
+                      '--angle': `${(360 / arr.length) * i - 90}deg`,
+                      '--sub-delay': `${i * 0.06}s`,
+                    }}
+                    onClick={() => goToQuote()}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}

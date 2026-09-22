@@ -258,6 +258,68 @@ a:hover { border-bottom-color: var(--amber); }
 @media (prefers-reduced-motion: reduce) { .bubble { animation: none; } }
 @media (max-width: 560px) { .bubble { width: 120px; height: 120px; font-size: 12.5px; } .bubble-icon { font-size: 22px; } }
 
+/* Bubble cluster (tap a category to expand its options, Apple-Watch style) */
+
+.bubble-cluster {
+  position: relative;
+  min-height: 340px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bubble-center {
+  position: relative;
+  z-index: 2;
+  border-color: var(--violet);
+  background: var(--violet-tint);
+}
+.bubble-center-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.bubble-sub {
+  --radius: 118px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 1px solid var(--violet);
+  background: var(--surface);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  padding: 10px;
+  cursor: pointer;
+  transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--radius)) rotate(calc(-1 * var(--angle)));
+  animation: bubble-pop 0.35s ease backwards;
+  animation-delay: var(--sub-delay, 0s);
+  transition: border-color 0.2s, background 0.2s;
+}
+.bubble-sub:hover { border-color: var(--violet); background: var(--violet-tint); }
+@keyframes bubble-pop {
+  from { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0) rotate(calc(-1 * var(--angle))); }
+  to { opacity: 1; transform: translate(-50%, -50%) rotate(var(--angle)) translateX(var(--radius)) rotate(calc(-1 * var(--angle))); }
+}
+@media (prefers-reduced-motion: reduce) { .bubble-sub { animation: none; } }
+@media (max-width: 640px) {
+  .bubble-cluster { min-height: 280px; }
+  .bubble-sub { --radius: 96px; width: 84px; height: 84px; font-size: 11px; }
+}
+@media (max-width: 400px) {
+  .bubble-sub { --radius: 82px; width: 72px; height: 72px; font-size: 9.5px; padding: 6px; }
+}
+
 .bubble-detail { margin-top: var(--sp-6); }
 .bubble-detail-list { display: flex; flex-wrap: wrap; gap: 10px; margin-top: var(--sp-2); }
 .bubble-detail-item {
