@@ -194,13 +194,23 @@ a:hover { border-bottom-color: var(--amber); }
 /* Hero --------------------------------------------------------------- */
 
 .hero {
+  position: relative;
   padding: var(--sp-12) 0 var(--sp-8);
+  min-height: 560px;
+  display: flex;
+  align-items: center;
   background:
+    linear-gradient(180deg, rgba(13, 13, 15, 0.35) 0%, rgba(13, 13, 15, 0.55) 45%, var(--bg) 100%),
     radial-gradient(ellipse 900px 500px at 15% -10%, var(--amber-tint), transparent 60%),
-    radial-gradient(ellipse 700px 500px at 100% 10%, var(--violet-tint), transparent 60%);
+    radial-gradient(ellipse 700px 500px at 100% 10%, var(--violet-tint), transparent 60%),
+    url('/assets/hero-dj-booth.webp') center 60% / cover no-repeat;
 }
+.hero .section-wide { position: relative; z-index: 1; }
 .hero-eyebrow { color: var(--ink-soft); font-size: 15px; margin-bottom: var(--sp-2); }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: var(--sp-4); }
+@media (max-width: 640px) {
+  .hero { min-height: 460px; padding: var(--sp-8) 0 var(--sp-6); }
+}
 
 /* How it works (sequence — numbering is earned here) ------------------- */
 
