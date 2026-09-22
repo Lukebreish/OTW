@@ -1,14 +1,27 @@
 import { useState } from 'react';
 
 const LINKS = [
-  ['services', 'Services'],
-  ['djs', 'DJs'],
-  ['packages', 'Packages'],
-  ['join', 'Join OTW'],
+  ['events', 'Events'],
+  ['artists', 'Artists'],
+  ['academy', 'Academy'],
+  ['label', 'Label'],
 ];
+
+// Sub-pages reached from within a division still highlight that division's nav item.
+const DIVISION_OF = {
+  events: 'events',
+  services: 'events',
+  packages: 'events',
+  quote: 'events',
+  artists: 'artists',
+  join: 'artists',
+  academy: 'academy',
+  label: 'label',
+};
 
 export default function Nav({ tab, setTab }) {
   const [open, setOpen] = useState(false);
+  const activeDivision = DIVISION_OF[tab] || null;
 
   const go = (t) => { setTab(t); setOpen(false); };
 
@@ -21,7 +34,7 @@ export default function Nav({ tab, setTab }) {
 
         <nav className="nav-links">
           {LINKS.map(([key, label]) => (
-            <button key={key} className={tab === key ? 'active' : ''} onClick={() => go(key)}>
+            <button key={key} className={activeDivision === key ? 'active' : ''} onClick={() => go(key)}>
               {label}
             </button>
           ))}
@@ -38,7 +51,7 @@ export default function Nav({ tab, setTab }) {
       {open && (
         <div className="nav-mobile-panel">
           {LINKS.map(([key, label]) => (
-            <button key={key} className={tab === key ? 'active' : ''} onClick={() => go(key)}>
+            <button key={key} className={activeDivision === key ? 'active' : ''} onClick={() => go(key)}>
               {label}
             </button>
           ))}

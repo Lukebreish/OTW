@@ -6,14 +6,14 @@ export default function Footer({ setTab }) {
       <div className="section-wide">
         <div className="otw-mark" style={{ marginBottom: 4 }}>OTW <span>·</span></div>
         <p className="small" style={{ maxWidth: 420 }}>
-          DJs, sound, lighting and production for events in Brussels and across Belgium.
+          Events, artists, training and releases — one name, four ways in.
         </p>
         <nav className="footer-links">
-          <button onClick={() => setTab('services')}>Services</button>
-          <button onClick={() => setTab('djs')}>DJs</button>
-          <button onClick={() => setTab('packages')}>Packages</button>
+          <button onClick={() => setTab('events')}>Events</button>
+          <button onClick={() => setTab('artists')}>Artists</button>
+          <button onClick={() => setTab('academy')}>Academy</button>
+          <button onClick={() => setTab('label')}>Label</button>
           <button onClick={() => setTab('quote')}>Get a quote</button>
-          <button onClick={() => setTab('join')}>Join OTW</button>
           <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
         </nav>
         <div className="footer-bottom">

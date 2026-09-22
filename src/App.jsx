@@ -3,9 +3,12 @@ import { supabase } from './lib/supabaseClient.js';
 import Nav from './components/Nav.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
+import Events from './pages/Events.jsx';
+import Artists from './pages/Artists.jsx';
+import Academy from './pages/Academy.jsx';
+import Label from './pages/Label.jsx';
 import Services from './pages/Services.jsx';
 import Packages from './pages/Packages.jsx';
-import Djs from './pages/Djs.jsx';
 import Quote from './pages/Quote.jsx';
 import Join from './pages/Join.jsx';
 
@@ -54,12 +57,6 @@ export default function App() {
     if (typeof window !== 'undefined') window.location.hash = tab;
   }, [tab]);
 
-  const goToDj = (id) => {
-    setSelectedDj(id);
-    setTab('djs');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   const goToQuote = (prefillServices) => {
     setQuotePrefill(prefillServices || null);
     setTab('quote');
@@ -90,23 +87,19 @@ export default function App() {
 
       {data.status === 'ready' && (
         <>
-          {tab === 'home' && (
-            <Home
-              packages={data.packages}
-              djs={data.djs}
-              categories={data.categories}
-              goTo={go}
-              goToQuote={goToQuote}
-              goToDj={goToDj}
-            />
+          {tab === 'home' && <Home goTo={go} />}
+          {tab === 'events' && (
+            <Events packages={data.packages} categories={data.categories} goTo={go} goToQuote={goToQuote} />
           )}
+          {tab === 'artists' && (
+            <Artists djs={data.djs} initialSelected={selectedDj} onDone={() => setSelectedDj(null)} goTo={go} />
+          )}
+          {tab === 'academy' && <Academy goTo={go} />}
+          {tab === 'label' && <Label goTo={go} />}
           {tab === 'services' && (
             <Services categories={data.categories} services={data.services} goToQuote={goToQuote} />
           )}
           {tab === 'packages' && <Packages packages={data.packages} goToQuote={goToQuote} />}
-          {tab === 'djs' && (
-            <Djs djs={data.djs} initialSelected={selectedDj} onDone={() => setSelectedDj(null)} goTo={go} />
-          )}
           {tab === 'quote' && <Quote categories={data.categories} services={data.services} prefill={quotePrefill} />}
           {tab === 'join' && <Join />}
         </>
