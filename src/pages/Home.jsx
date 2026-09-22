@@ -25,7 +25,7 @@ const DIVISIONS = [
     tint: 'var(--violet-tint)',
     for: 'For venues & promoters',
     name: 'OTW Artists',
-    pitch: "Meet OTW's roster of DJs, booked for your venue or night.",
+    pitch: "Meet OTW's roster of artists, booked for your venue or night.",
     cta: 'Meet the artists',
   },
   {

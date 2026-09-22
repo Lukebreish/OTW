@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient.js';
 
 const AVAILABILITY = ['Weekends only', 'Weekdays too', 'Flexible', 'Limited — ask me'];
+const ROLES = ['DJ', 'DJ/Producer', 'Singer'];
 
 export default function Join() {
   const [form, setForm] = useState({
-    name: '', email: '', location: '', djName: '', genres: '', yearsExperience: '',
+    name: '', email: '', location: '', djName: '', role: '', genres: '', yearsExperience: '',
     bio: '', instagram: '', soundcloud: '', mixcloud: '', spotify: '', languages: '',
     availability: '', rate: '', notes: '',
   });
@@ -22,6 +23,7 @@ export default function Join() {
       email: form.email,
       location: form.location || null,
       dj_name: form.djName,
+      role: form.role || null,
       genres: form.genres ? form.genres.split(',').map((g) => g.trim()).filter(Boolean) : [],
       years_experience: form.yearsExperience ? Number(form.yearsExperience) : null,
       bio: form.bio || null,
@@ -57,7 +59,7 @@ export default function Join() {
       <div className="section-narrow">
         <h1>Join OTW</h1>
         <p className="lead" style={{ marginTop: 12 }}>
-          More than a booking list — a network of DJs we actually vouch for. Tell us about what
+          More than a booking list — a network of artists we actually vouch for. Tell us about what
           you play and where you've played it.
         </p>
 
@@ -75,24 +77,32 @@ export default function Join() {
 
           <div className="field-row">
             <div className="field">
-              <label htmlFor="j-djname">DJ name</label>
+              <label htmlFor="j-djname">Artist name</label>
               <input id="j-djname" required value={form.djName} onChange={set('djName')} />
             </div>
             <div className="field">
-              <label htmlFor="j-location">Location</label>
-              <input id="j-location" value={form.location} onChange={set('location')} />
+              <label htmlFor="j-role">Role</label>
+              <select id="j-role" value={form.role} onChange={set('role')}>
+                <option value="">Select one</option>
+                {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
             </div>
           </div>
 
           <div className="field-row">
             <div className="field">
-              <label htmlFor="j-genres">Genres (comma separated)</label>
-              <input id="j-genres" placeholder="Afro House, Tech House" value={form.genres} onChange={set('genres')} />
+              <label htmlFor="j-location">Location</label>
+              <input id="j-location" value={form.location} onChange={set('location')} />
             </div>
             <div className="field">
               <label htmlFor="j-years">Years playing</label>
               <input id="j-years" type="number" min="0" value={form.yearsExperience} onChange={set('yearsExperience')} />
             </div>
+          </div>
+
+          <div className="field">
+            <label htmlFor="j-genres">Genres (comma separated)</label>
+            <input id="j-genres" placeholder="Afro House, Tech House" value={form.genres} onChange={set('genres')} />
           </div>
 
           <div className="field">

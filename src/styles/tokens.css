@@ -478,6 +478,7 @@ a:hover { border-bottom-color: var(--amber); }
    translated to OTW's own dark palette and amber accent ----------------- */
 
 .dj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 32px; margin-top: var(--sp-4); }
+@media (max-width: 640px) { .dj-grid { grid-template-columns: repeat(2, 1fr); gap: 20px 16px; } }
 .dj-card { display: flex; flex-direction: column; align-items: center; text-align: center; background: none; border: none; padding: 12px; font: inherit; color: inherit; cursor: pointer; border-radius: 0; }
 .dj-photo {
   width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--amber);

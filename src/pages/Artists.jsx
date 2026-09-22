@@ -10,7 +10,7 @@ export default function Artists({ djs, initialSelected, onDone, goTo }) {
           <div>
             <h2>More than a roster. A community of artists.</h2>
             <p style={{ marginTop: 12 }}>
-              Every DJ on Off The World is reviewed and published by us, not self-listed. If you play
+              Every artist on Off The World is reviewed and published by us, not self-listed. If you play
               and want to be part of the network, we'd like to hear what you do.
             </p>
             <button className="btn-outline" onClick={() => goTo('join')}>Join OTW</button>

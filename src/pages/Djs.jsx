@@ -23,15 +23,15 @@ export default function Djs({ djs, initialSelected, onDone, goTo }) {
   return (
     <section className="section">
       <div className="section-wide">
-        <h1>The DJs</h1>
+        <h1>The Artists</h1>
         <p className="lead" style={{ marginTop: 12 }}>
-          Every DJ here is reviewed and published by Off The World — click a face for genres,
+          Every artist here is reviewed and published by Off The World — click a face for genres,
           links and their story.
         </p>
 
         {djs.length === 0 ? (
           <div className="panel" style={{ marginTop: 24 }}>
-            <p>No published DJs yet — check back soon, or ask us directly who's available.</p>
+            <p>No published artists yet — check back soon, or ask us directly who's available.</p>
           </div>
         ) : (
           <div className="dj-grid" style={{ marginTop: 32 }}>
@@ -47,7 +47,7 @@ export default function Djs({ djs, initialSelected, onDone, goTo }) {
                   {dj.image_url ? <img src={dj.image_url} alt={dj.name} loading="lazy" /> : dj.name.slice(0, 1)}
                 </div>
                 <div className="dj-name">{dj.name}</div>
-                <div className="dj-meta">{dj.location}</div>
+                <div className="dj-meta">{dj.role}{dj.location ? ` · ${dj.location}` : ''}</div>
               </button>
             ))}
           </div>
@@ -66,7 +66,8 @@ export default function Djs({ djs, initialSelected, onDone, goTo }) {
                 </div>
                 <div className="dj-profile-name">{selected.name}</div>
                 <div className="dj-profile-location">
-                  {selected.location}
+                  {selected.role}
+                  {selected.location ? ` · ${selected.location}` : ''}
                   {selected.years_experience ? ` · ${selected.years_experience}y` : ''}
                 </div>
               </div>
