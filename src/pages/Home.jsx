@@ -83,6 +83,7 @@ export default function Home({ goTo }) {
         <div className="section-wide hub-hero-inner">
           <div className="hub-hero-lockup">
             <span className="hub-hero-otw">OTW</span>
+            <span className="hub-hero-divider" style={{ background: word.color }} />
             <span className="flip-stage">
               {prevWord && (
                 <span className="flip-word leave" style={{ '--word-color': prevWord.color }}>
@@ -94,7 +95,6 @@ export default function Home({ goTo }) {
               </span>
             </span>
           </div>
-          <div className="hub-hero-underline" style={{ background: word.color }} />
           <p className="hub-hero-sub">
             One name, four ways in — production, artists, training and releases, all under one roof.
           </p>
