@@ -4,14 +4,10 @@ import { iconFor } from '../lib/categoryIcons.js';
 const BUBBLE_SLUGS = ['djs', 'dj-equipment', 'sound', 'lighting'];
 
 const SUB_ITEMS = {
-  djs: ['Commercial music', 'Underground', 'Wedding', 'Corporate'],
+  djs: ['Commercial music', 'Electronic', 'Wedding', 'Corporate', 'Lounge'],
   'dj-equipment': ['DJ controller', 'Club standard gear', 'Custom setup'],
-  sound: ['2 Tops', '2 Tops + 1 Subs', 'Full range'],
-  lighting: [
-    '2 × LED uplights / wash lights',
-    '2 × moving heads + LED wash/uplights',
-    'Full Event Lighting',
-  ],
+  sound: ['Tops', 'Subs', 'Full range', 'Mic'],
+  lighting: ['LEDs', 'Moving heads', 'Full event lighting'],
 };
 
 const STEPS = [
