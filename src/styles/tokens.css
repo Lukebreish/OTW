@@ -21,6 +21,10 @@
   --violet-deep: #6a58e8;
   --violet-tint: rgba(139, 123, 255, 0.16);
   --danger: #e2685b;
+  --cyan: #5cc8d6;
+  --cyan-tint: rgba(92, 200, 214, 0.16);
+  --magenta: #e26bb0;
+  --magenta-tint: rgba(226, 107, 176, 0.16);
 
   /* Type */
   --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
@@ -210,6 +214,84 @@ a:hover { border-bottom-color: var(--amber); }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: var(--sp-4); }
 @media (max-width: 640px) {
   .hero { min-height: 460px; padding: var(--sp-8) 0 var(--sp-6); }
+}
+
+/* Hub hero — OTW + flipping division word ---------------------------- */
+
+.hub-hero { position: relative; padding: var(--sp-12) 0 var(--sp-6); overflow: hidden; text-align: center; }
+.hub-hero-glow {
+  position: absolute; top: -180px; left: 50%; transform: translateX(-50%);
+  width: 760px; height: 420px; border-radius: 50%; filter: blur(90px); opacity: 0.32;
+  background: var(--glow-color, var(--amber)); transition: background 0.6s ease;
+  pointer-events: none; z-index: 0;
+}
+.hub-hero-inner { position: relative; z-index: 1; }
+.hub-hero-lockup {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 0 16px;
+  font-family: var(--font-display); font-weight: 800; letter-spacing: -0.02em;
+  font-size: clamp(40px, 8vw, 84px); line-height: 0.98;
+}
+.hub-hero-otw { color: var(--ink); }
+.flip-stage { position: relative; display: inline-block; height: 1.05em; overflow: hidden; vertical-align: baseline; min-width: 8.2ch; text-align: left; }
+.flip-word { position: absolute; left: 0; top: 0; white-space: nowrap; color: var(--word-color, var(--amber)); }
+.flip-word.enter { animation: flip-in 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) forwards; }
+.flip-word.leave { animation: flip-out 0.4s cubic-bezier(0.5, 0, 0.75, 0) forwards; }
+@keyframes flip-in { from { transform: translateY(110%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes flip-out { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-110%); opacity: 0; } }
+.hub-hero-underline { height: 4px; width: 84px; margin: 26px auto 0; border-radius: 2px; transition: background 0.35s ease; }
+.hub-hero-sub { max-width: 52ch; margin: 24px auto 0; text-align: center; font-size: 18px; color: var(--ink-soft); }
+@media (max-width: 640px) {
+  .hub-hero { padding: var(--sp-8) 0 var(--sp-4); }
+  .hub-hero-sub { font-size: 16px; }
+}
+
+/* Division cards + pipeline -------------------------------------------- */
+
+.division-section { padding: var(--sp-4) 0 var(--sp-8); }
+.division-head { text-align: center; margin-bottom: var(--sp-4); }
+.division-head h2 { margin: 0 0 8px; }
+.division-head p { margin: 0 auto; text-align: center; }
+
+.division-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-2); }
+@media (max-width: 980px) { .division-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .division-grid { grid-template-columns: 1fr; } }
+
+.division-card {
+  position: relative; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+  padding: 26px 20px 22px; text-align: left; display: flex; flex-direction: column; gap: 8px;
+  transition: transform 0.18s ease, border-color 0.18s ease; cursor: pointer; font-family: inherit;
+  border-top: 3px solid var(--card-color, var(--rule));
+  width: 100%;
+}
+.division-card:hover:not(:disabled) { transform: translateY(-4px); border-color: var(--card-color, var(--rule)); }
+.division-card:disabled { cursor: default; opacity: 0.72; }
+.division-icon {
+  width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; background: var(--card-tint, var(--amber-tint)); margin-bottom: 2px;
+}
+.division-name { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--ink); }
+.division-for { font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--card-color, var(--amber)); font-weight: 600; }
+.division-pitch { font-size: 14px; color: var(--ink-soft); margin: 2px 0 6px; }
+.division-cta { font-size: 13.5px; font-weight: 600; color: var(--ink); display: flex; align-items: center; gap: 6px; margin-top: auto; }
+.division-cta .arrow { transition: transform 0.15s ease; }
+.division-card:hover:not(:disabled) .division-cta .arrow { transform: translateX(3px); }
+.division-soon-tag {
+  position: absolute; top: 16px; right: 16px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--ink-soft); background: var(--surface-2); border: 1px solid var(--rule);
+  border-radius: 3px; padding: 3px 7px;
+}
+
+.pipeline { margin-top: var(--sp-4); border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface); padding: 20px 22px; }
+.pipeline-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
+.pipeline-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 6px; font-family: var(--font-display); font-weight: 600; font-size: 14px; }
+.pipeline-step { display: flex; align-items: center; gap: 8px; padding: 6px 13px; border-radius: 20px; background: var(--step-tint); color: var(--step-color); }
+.pipeline-arrow { color: var(--ink-soft); font-size: 13px; }
+@media (max-width: 560px) { .pipeline-row { font-size: 13px; } }
+
+.subsection-tag {
+  display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--amber); background: var(--amber-tint); border: 1px solid rgba(215, 169, 74, 0.35);
+  border-radius: 3px; padding: 4px 9px;
 }
 
 /* How it works (sequence — numbering is earned here) ------------------- */
