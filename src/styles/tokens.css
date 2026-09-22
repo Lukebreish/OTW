@@ -232,12 +232,12 @@ a:hover { border-bottom-color: var(--amber); }
   font-size: clamp(40px, 8vw, 84px); line-height: 0.98;
 }
 .hub-hero-otw { color: var(--ink); }
-.flip-stage { position: relative; display: inline-block; height: 1.05em; overflow: hidden; vertical-align: baseline; min-width: 8.2ch; text-align: left; }
-.flip-word { position: absolute; left: 0; top: 0; white-space: nowrap; color: var(--word-color, var(--amber)); }
+.flip-stage { position: relative; display: inline-block; height: 1.05em; overflow: hidden; vertical-align: baseline; min-width: 8.2ch; text-align: center; }
+.flip-word { position: absolute; left: 50%; top: 0; white-space: nowrap; color: var(--word-color, var(--amber)); transform: translate(-50%, 0); }
 .flip-word.enter { animation: flip-in 0.55s cubic-bezier(0.2, 0.9, 0.25, 1) forwards; }
 .flip-word.leave { animation: flip-out 0.4s cubic-bezier(0.5, 0, 0.75, 0) forwards; }
-@keyframes flip-in { from { transform: translateY(110%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-@keyframes flip-out { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-110%); opacity: 0; } }
+@keyframes flip-in { from { transform: translate(-50%, 110%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+@keyframes flip-out { from { transform: translate(-50%, 0); opacity: 1; } to { transform: translate(-50%, -110%); opacity: 0; } }
 .hub-hero-underline { height: 4px; width: 84px; margin: 26px auto 0; border-radius: 2px; transition: background 0.35s ease; }
 .hub-hero-sub { max-width: 52ch; margin: 24px auto 0; text-align: center; font-size: 18px; color: var(--ink-soft); }
 @media (max-width: 640px) {

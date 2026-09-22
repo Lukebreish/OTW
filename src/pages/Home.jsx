@@ -20,8 +20,8 @@ const STEPS = [
 const FLIP_WORDS = [
   { key: 'events', text: 'EVENTS', color: 'var(--amber)' },
   { key: 'artists', text: 'ARTISTS', color: 'var(--violet)' },
-  { key: 'academy', text: 'ACADEMY', color: 'var(--cyan)' },
-  { key: 'label', text: 'LABEL', color: 'var(--magenta)' },
+  { key: 'academy', text: 'ACADEMY', color: 'var(--magenta)' },
+  { key: 'label', text: 'LABEL', color: 'var(--cyan)' },
 ];
 
 const DIVISIONS = [
@@ -50,8 +50,8 @@ const DIVISIONS = [
   {
     key: 'academy',
     icon: '\u{1F393}',
-    color: 'var(--cyan)',
-    tint: 'var(--cyan-tint)',
+    color: 'var(--magenta)',
+    tint: 'var(--magenta-tint)',
     for: 'For aspiring DJs & producers',
     name: 'OTW Academy',
     pitch: 'Learn to DJ and produce with mentorship and studio time.',
@@ -60,9 +60,9 @@ const DIVISIONS = [
   },
   {
     key: 'label',
-    icon: '\u{1F3A4}',
-    color: 'var(--magenta)',
-    tint: 'var(--magenta-tint)',
+    icon: '\u{1F4BF}',
+    color: 'var(--cyan)',
+    tint: 'var(--cyan-tint)',
     for: 'For artists & platforms',
     name: 'OTW Label',
     pitch: 'Music released under the OTW name — tracks, EPs, distribution.',
@@ -177,7 +177,7 @@ export default function Home({ packages, djs, categories, goTo, goToQuote, goToD
           <div className="pipeline">
             <div className="pipeline-label">How it fits together</div>
             <div className="pipeline-row">
-              <span className="pipeline-step" style={{ '--step-tint': 'var(--cyan-tint)', '--step-color': 'var(--cyan)' }}>
+              <span className="pipeline-step" style={{ '--step-tint': 'var(--magenta-tint)', '--step-color': 'var(--magenta)' }}>
                 🎓 Academy trains
               </span>
               <span className="pipeline-arrow" aria-hidden="true">→</span>
@@ -189,8 +189,8 @@ export default function Home({ packages, djs, categories, goTo, goToQuote, goToD
                 🎛️ Events produces
               </span>
               <span className="pipeline-arrow" aria-hidden="true">→</span>
-              <span className="pipeline-step" style={{ '--step-tint': 'var(--magenta-tint)', '--step-color': 'var(--magenta)' }}>
-                🎤 Label releases
+              <span className="pipeline-step" style={{ '--step-tint': 'var(--cyan-tint)', '--step-color': 'var(--cyan)' }}>
+                💿 Label releases
               </span>
             </div>
           </div>
