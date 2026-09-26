@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabaseClient.js';
 import { recommendPackageId } from '../lib/recommend.js';
 import { HalfWorld } from '../components/ui.jsx';
 
-const EVENT_TYPES = ['Birthday', 'Wedding', 'Corporate event', 'Private party', 'Brand event', 'Club / nightlife', 'Festival', 'Other'];
+export const EVENT_TYPES = ['Birthday', 'Wedding', 'Corporate event', 'Private party', 'Brand event', 'Club / nightlife', 'Festival', 'Other'];
 const SIZES = [['lt30', 'Up to 30'], ['30-100', '30–100'], ['100-300', '100–300'], ['300+', '300+']];
 const DURATIONS = [['2-4', '2–4 hours'], ['4-6', '4–6 hours'], ['6-8', '6–8 hours'], ['8+', '8+ hours']];
 const SETTINGS = ['Indoor', 'Outdoor', 'Not sure yet'];
@@ -23,12 +23,12 @@ function Choice({ active, onClick, children }) {
 }
 
 export default function Quote({ categories, prefill }) {
-  const [step, setStep] = useState(0);
-  const [eventType, setEventType] = useState('');
+  const [step, setStep] = useState(prefill?.eventType ? 1 : 0);
+  const [eventType, setEventType] = useState(prefill?.eventType || '');
   const [eventSize, setEventSize] = useState('');
   const [duration, setDuration] = useState('');
   const [setting, setSetting] = useState('');
-  const [servicesWanted, setServicesWanted] = useState(prefill || []);
+  const [servicesWanted, setServicesWanted] = useState(prefill?.services || []);
   const [contact, setContact] = useState({ name: '', email: '', phone: '', location: '', eventDate: '', notes: '' });
   const [submitState, setSubmitState] = useState('idle');
 

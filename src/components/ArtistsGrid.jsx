@@ -30,6 +30,7 @@ export default function ArtistsGrid({ djs, limit, initialSelected, onBook }) {
           <button key={dj.id} type="button" className="artist-card" onClick={() => toggle(dj.id)} aria-pressed={dj.id === selectedId}>
             <div className="artist-photo">
               {dj.image_url ? <img src={dj.image_url} alt="" loading="lazy" /> : <span className="artist-initial">{dj.name.slice(0, 1)}</span>}
+              {dj.certified && <span className="tag tag-fill artist-cert">OTW Certified</span>}
             </div>
             <div className="artist-name">{dj.name}</div>
             <div className="artist-meta label label-xs">{[dj.role, dj.location].filter(Boolean).join(' · ')}</div>

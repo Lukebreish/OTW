@@ -57,6 +57,12 @@ price, ENROL →), ScheduleTable (next open row in accent fill), EnrolForm
 details rows, half-world marker lights up when open), ArtistsGrid (shared by
 Artists, Academy and Events).
 
+Home: split hero (copy left, grayscale photo right with the half-world
+rising), three entity doors, Events block (occasion tags that pre-fill the
+quote, supply cells, stats, packages/next-night row), proof (logos,
+testimonials), Academy (certified DJs, next courses, class→club path),
+Records (featured release), sticky mobile quote button.
+
 Not built yet: course and release detail pages, Tracklist.
 
 ## Decisions Log
@@ -73,3 +79,6 @@ Not built yet: course and release detail pages, Tracklist.
 | 2026-09-26 | Academy: courses, schedule, enrol + payment placeholder, artists spotlight | Academy sells courses and showcases the roster |
 | 2026-09-26 | Courses can link out via `booking_url` (e.g. Plug The Jack) or book on-site | DJ courses are also sold through Plug The Jack |
 | 2026-09-26 | Payment is a placeholder (`src/lib/payments.js`); bookings save as pending_payment, paid by bank transfer | No payment provider yet |
+| 2026-09-26 | Home order: Events → proof → Academy (DJs, courses) → Records | Events is the main revenue line; Academy artists feed it |
+| 2026-09-26 | Proof sections (stats, clients, testimonials) render only with real rows (migration 005) | No placeholder claims on a live site |
+| 2026-09-26 | OTW CERTIFIED tag driven by `djs.certified` | Certification must be a real, per-artist decision |

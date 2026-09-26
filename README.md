@@ -56,6 +56,10 @@ changes.
   Jack listing and its Enrol button goes there instead of the on-site form.
   Add releases to `releases` (catalogue no. as `id`, e.g. `OTW001`). A
   future `release_date` + `presave_url` shows the pre-save bar.
+- **Home page proof**: run `supabase/migrations/005_home_proof.sql`. Tick
+  `djs.certified` for artists who get the OTW CERTIFIED tag. Add rows to
+  `stats` (e.g. `120+` / `Events delivered`), `clients` (name + logo URL)
+  and `testimonials`. Each home section stays hidden until it has rows.
 - **Course bookings & demos**: read from `course_bookings` and
   `demo_submissions`. Bookings arrive as `pending_payment`; email payment
   details, then set `paid` / `confirmed`. Online card payment is a

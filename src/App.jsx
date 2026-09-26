@@ -21,7 +21,7 @@ function useOtwData() {
     let cancelled = false;
     (async () => {
       try {
-        const [categoriesRes, servicesRes, packagesRes, djsRes, eventsRes, coursesRes, sessionsRes, releasesRes] = await Promise.all([
+        const [categoriesRes, servicesRes, packagesRes, djsRes, eventsRes, coursesRes, sessionsRes, releasesRes, statsRes, clientsRes, testimonialsRes] = await Promise.all([
           supabase.from('service_categories').select('*').order('sort_order'),
           supabase.from('services').select('*').order('sort_order'),
           supabase.from('packages').select('*').order('sort_order'),
@@ -30,6 +30,9 @@ function useOtwData() {
           supabase.from('courses').select('*').eq('published', true).order('sort_order'),
           supabase.from('course_sessions').select('*').order('sort_order'),
           supabase.from('releases').select('*').eq('published', true).order('id', { ascending: false }),
+          supabase.from('stats').select('*').order('sort_order'),
+          supabase.from('clients').select('*').order('sort_order'),
+          supabase.from('testimonials').select('*').eq('published', true).order('sort_order'),
         ]);
         const firstError = categoriesRes.error || servicesRes.error || packagesRes.error || djsRes.error;
         if (firstError) throw firstError;
@@ -47,6 +50,10 @@ function useOtwData() {
           courses: coursesRes.error ? [] : coursesRes.data || [],
           sessions: sessionsRes.error ? [] : sessionsRes.data || [],
           releases: releasesRes.error ? [] : releasesRes.data || [],
+          // Migration 005 tables (home page proof).
+          stats: statsRes.error ? [] : statsRes.data || [],
+          clients: clientsRes.error ? [] : clientsRes.data || [],
+          testimonials: testimonialsRes.error ? [] : testimonialsRes.data || [],
         });
       } catch (err) {
         if (!cancelled) setState({ status: 'error', error: err });
@@ -80,8 +87,9 @@ export default function App() {
     window.scrollTo({ top: 0 });
   };
 
-  const goToQuote = (prefill) => {
-    setQuotePrefill(prefill || null);
+  // prefill: array of service category slugs; eventType: e.g. 'Wedding'.
+  const goToQuote = (prefill, eventType) => {
+    setQuotePrefill(prefill || eventType ? { services: prefill || [], eventType: eventType || '' } : null);
     go('quote');
   };
 
@@ -103,7 +111,7 @@ export default function App() {
 
         {data.status === 'ready' && (
           <>
-            {route === 'home' && <Home events={data.events} go={go} />}
+            {route === 'home' && <Home data={data} go={go} goToQuote={goToQuote} />}
             {route === 'events' && (
               <Events events={data.events} categories={data.categories} services={data.services} packages={data.packages} djs={data.djs} go={go} goToQuote={goToQuote} />
             )}
@@ -122,6 +130,12 @@ export default function App() {
           </>
         )}
       </main>
+
+      {route !== 'quote' && (
+        <button className="sticky-cta btn btn-primary" data-entity="events" onClick={() => goToQuote()}>
+          Get a quote →
+        </button>
+      )}
 
       <Footer go={go} />
     </>
