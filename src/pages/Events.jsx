@@ -1,148 +1,130 @@
 import { useState } from 'react';
-import { iconFor } from '../lib/categoryIcons.js';
+import EventCard from '../components/EventCard.jsx';
+import { HalfWorld } from '../components/ui.jsx';
 
-const BUBBLE_SLUGS = ['djs', 'dj-equipment', 'sound', 'lighting'];
-
-const SUB_ITEMS = {
-  djs: ['Commercial music', 'Electronic', 'Wedding', 'Corporate', 'Lounge'],
-  'dj-equipment': ['DJ controller', 'Club standard gear', 'Custom setup'],
-  sound: ['Tops', 'Subs', 'Full range', 'Mic'],
-  lighting: ['LEDs', 'Moving heads', 'Full event lighting'],
-};
+const SHOWCASE_SLUGS = ['djs', 'dj-equipment', 'sound', 'lighting'];
 
 const STEPS = [
-  ['Tell us about it', 'Party, wedding, corporate, club night — whatever it is, start with a few basics.'],
-  ['We put a setup together', 'DJ, sound, lighting, staging — whatever the event actually needs, nothing you don’t.'],
-  ['We check it and quote it', 'A real person reviews every request before anything gets sent to you.'],
-  ['You book, we run it', 'One team handles the DJ, the gear and the people on the ground on the night.'],
+  ['Tell us about it', 'Party, wedding, corporate, club night. Start with a few basics.'],
+  ['We build a setup', 'DJ, sound, lighting, staging. What the event needs, nothing it doesn’t.'],
+  ['We check and quote', 'A real person reviews every request before anything is sent to you.'],
+  ['You book, we run it', 'One team handles the DJ, the gear and the crew on the night.'],
 ];
 
-export default function Events({ packages, categories, goTo, goToQuote }) {
-  const previewPackages = packages.slice(0, 3);
-  const [activeSlug, setActiveSlug] = useState(null);
-  const bubbleCategories = BUBBLE_SLUGS
-    .map((slug) => categories.find((c) => c.slug === slug))
-    .filter(Boolean);
-  const activeCategory = bubbleCategories.find((c) => c.slug === activeSlug) || null;
+export default function Events({ events, categories, packages, go, goToQuote }) {
+  const [tab, setTab] = useState('upcoming');
+  const now = Date.now();
+  const upcoming = events.filter((e) => new Date(e.starts_at).getTime() >= now);
+  const past = events.filter((e) => new Date(e.starts_at).getTime() < now).reverse();
+  const list = tab === 'upcoming' ? upcoming : past;
+  const showcase = SHOWCASE_SLUGS.map((s) => categories.find((c) => c.slug === s)).filter(Boolean);
 
   return (
     <>
-      <section className="hero">
-        <div className="section-wide">
-          <p className="hero-eyebrow">Events, DJs, sound, lighting &amp; production — Brussels and beyond</p>
-          <h1 style={{ maxWidth: '16ch' }}>Everything your event needs, handled by one team.</h1>
-          <p className="lead" style={{ marginTop: 16 }}>
-            You bring the guest list. Off The World brings the DJ, the sound, the lighting and the
-            people to run it — sized to your event, not a one-size-fits-all package.
-          </p>
-          <div className="hero-actions">
-            <button className="btn-solid" onClick={() => goToQuote()}>Get a quote</button>
-            <button className="btn-outline" onClick={() => goTo('services')}>See our services</button>
+      <section className="hero hero-division">
+        <div className="hero-rise" aria-hidden="true" />
+        <div className="wrap hero-inner">
+          <div className="eyebrow label"><HalfWorld size={16} />OTW Events</div>
+          <h1>Nights we run. Events we produce.</h1>
+          <p className="lead">Our own club nights in Brussels, and full production for yours. DJs, sound, lighting and crew from one team.</p>
+          <div className="actions">
+            <button className="btn btn-primary" onClick={() => goToQuote()}>Get a quote</button>
+            <button className="btn btn-secondary" onClick={() => document.getElementById('nights')?.scrollIntoView({ block: 'start' })}>
+              Upcoming nights
+            </button>
           </div>
         </div>
       </section>
 
-      <section className="section-tight">
-        <div className="section-wide">
-          <h2>How it works</h2>
-          <div className="steps">
+      <section className="section" id="nights" style={{ scrollMarginTop: 80 }}>
+        <div className="wrap">
+          <div className="section-head"><h2>OTW nights</h2></div>
+          <div className="tabs" role="tablist">
+            {[['upcoming', `Upcoming · ${upcoming.length}`], ['past', `Past · ${past.length}`]].map(([key, label]) => (
+              <button key={key} role="tab" className="label" aria-selected={tab === key} onClick={() => setTab(key)}>
+                {label}
+              </button>
+            ))}
+          </div>
+          {list.length > 0 ? (
+            <div className="card-grid">
+              {list.map((e) => <EventCard key={e.id} event={e} past={tab === 'past'} />)}
+            </div>
+          ) : (
+            <p className="empty">
+              {tab === 'upcoming'
+                ? 'Nothing announced yet. Sign up to the newsletter below and you’ll hear first.'
+                : 'No past nights listed yet.'}
+            </p>
+          )}
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="wrap">
+          <div className="section-head">
+            <div>
+              <div className="eyebrow label"><HalfWorld size={16} />Production</div>
+              <h2>Your event, handled</h2>
+              <p className="lead">You bring the guest list. We bring the DJ, the sound, the lighting and the people to run it.</p>
+            </div>
+          </div>
+          <div className="cells cells-4">
             {STEPS.map(([title, body], i) => (
               <div key={title}>
                 <div className="step-num">{String(i + 1).padStart(2, '0')}</div>
-                <div className="step-title">{title}</div>
-                <p className="small">{body}</p>
+                <div className="step-title label">{title}</div>
+                <p className="muted">{body}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {bubbleCategories.length > 0 && (
-        <section className="section-tight">
-          <div className="section-wide">
-            <h2>What we bring</h2>
-            <p style={{ marginTop: 8 }}>
-              {activeCategory
-                ? `${activeCategory.name} — tap an option, or hit back.`
-                : 'DJs, equipment, sound and lighting — tap one to see how it breaks down.'}
-            </p>
-            {!activeCategory ? (
-              <div className="bubble-field" style={{ paddingTop: 32 }}>
-                {bubbleCategories.map((c, i) => (
-                  <button
-                    key={c.id}
-                    className="bubble"
-                    style={{ '--float-delay': `${(i % 5) * 0.6}s` }}
-                    onClick={() => setActiveSlug(c.slug)}
-                  >
-                    <span className="bubble-icon" aria-hidden="true">{iconFor(c.slug)}</span>
-                    {c.name}
-                    <span className="bubble-hint" aria-hidden="true">+</span>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="bubble-cluster">
-                <button
-                  className="bubble-fan-header"
-                  onClick={() => setActiveSlug(null)}
-                  aria-label={`Close ${activeCategory.name}`}
-                >
-                  <span className="bubble-icon" aria-hidden="true">{iconFor(activeCategory.slug)}</span>
-                  {activeCategory.name}
-                  <span className="bubble-fan-header-x" aria-hidden="true">✕</span>
-                </button>
-                <div className="bubble-fan">
-                  {(SUB_ITEMS[activeCategory.slug] || []).map((label, i) => (
-                    <button
-                      key={label}
-                      className="bubble-fan-sub"
-                      style={{ '--sub-delay': `${i * 0.05}s` }}
-                      onClick={() => goToQuote([activeCategory.slug])}
-                    >
-                      {label}
-                    </button>
-                  ))}
+      {showcase.length > 0 && (
+        <section className="section">
+          <div className="wrap">
+            <div className="section-head">
+              <h2>What we bring</h2>
+              <button className="btn btn-ghost" onClick={() => go('services')}>All services →</button>
+            </div>
+            <div className="cat-list">
+              {showcase.map((c) => (
+                <div key={c.id} className="cat-row">
+                  <h3><HalfWorld size={24} />{c.name}</h3>
+                  <p className="muted">{c.description}</p>
+                  <button className="btn btn-ghost" onClick={() => goToQuote([c.slug])}>Quote →</button>
                 </div>
-                <button type="button" className="bubble-back" onClick={() => setActiveSlug(null)}>
-                  ← Back
-                </button>
-              </div>
-            )}
+              ))}
+            </div>
           </div>
         </section>
       )}
 
-      {previewPackages.length > 0 && (
-        <section className="section-tight">
-          <div className="section-wide">
-            <h2>Fixed packages, if that's easier</h2>
-            <p style={{ marginTop: 8 }}>A starting point — every one of these can be adjusted to what you actually need.</p>
-            <div className="packages-grid">
-              {previewPackages.map((p) => (
-                <div key={p.id} className={`panel package-panel ${p.is_featured ? 'featured' : ''}`}>
+      {packages.length > 0 && (
+        <section className="section">
+          <div className="wrap">
+            <div className="section-head">
+              <h2>Packages</h2>
+              <button className="btn btn-ghost" onClick={() => go('packages')}>Compare packages →</button>
+            </div>
+            <div className="card-grid">
+              {packages.slice(0, 3).map((p) => (
+                <div key={p.id} className={`card ${p.is_featured ? 'card-featured' : ''}`}>
                   <h3>{p.name}</h3>
-                  <p className="small">{p.tagline}</p>
+                  <p className="muted" style={{ marginTop: 'var(--space-3)' }}>{p.tagline}</p>
                   <div className="package-price">{p.price_from ? `From €${p.price_from}` : 'On request'}</div>
                 </div>
               ))}
             </div>
-            <div style={{ marginTop: 24 }}>
-              <button className="btn-outline" onClick={() => goTo('packages')}>Compare packages</button>
-            </div>
           </div>
         </section>
       )}
 
-      <section className="section-tight">
-        <div className="section-wide panel" style={{ textAlign: 'center', padding: '56px 32px' }}>
-          <h2>Tell us about your event. We'll figure out the rest.</h2>
-          <p style={{ margin: '12px auto 0', textAlign: 'center' }}>Two minutes, no obligation, a real answer within a business day.</p>
-          <div className="hero-actions" style={{ justifyContent: 'center' }}>
-            <button className="btn-solid" onClick={() => goToQuote()}>Get a quote</button>
-          </div>
-        </div>
-      </section>
+      <button className="cta-bar" onClick={() => goToQuote()}>
+        <span>Get a quote</span>
+        <span>2 min · No obligation →</span>
+      </button>
     </>
   );
 }

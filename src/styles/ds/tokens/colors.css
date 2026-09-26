@@ -1,0 +1,39 @@
+:root{
+  /* Base */
+  --otw-ink:#0f1113;
+  --otw-white:#ffffff;
+  --otw-grey-900:#1c1f22;
+  --otw-grey-700:#3a3e42;
+  --otw-grey-500:#6b6f73;
+  --otw-grey-300:#c9cbcd;
+  --otw-grey-100:#eeeeef;
+  /* Entities */
+  --otw-gold:#d4aa4c;   /* Master: OTW Off The World */
+  --otw-green:#8fbf5a;  /* Events */
+  --otw-coral:#ff5a3c;  /* Academy */
+  --otw-teal:#5cc8d4;   /* Records */
+  /* Semantic (default = dark site, master entity) */
+  --surface-page:var(--otw-ink);
+  --surface-raised:var(--otw-grey-900);
+  --surface-inverse:var(--otw-white);
+  --text-primary:var(--otw-white);
+  --text-secondary:var(--otw-grey-300);
+  --text-inverse:var(--otw-ink);
+  --rule-color:var(--otw-white);
+  --accent:var(--otw-gold);
+  --on-accent:var(--otw-ink);
+  --focus-ring:var(--accent);
+}
+[data-entity="main"]{--accent:var(--otw-gold)}
+[data-entity="events"]{--accent:var(--otw-green)}
+[data-entity="academy"]{--accent:var(--otw-coral)}
+[data-entity="records"]{--accent:var(--otw-teal)}
+[data-theme="light"]{
+  --surface-page:var(--otw-white);
+  --surface-raised:var(--otw-grey-100);
+  --surface-inverse:var(--otw-ink);
+  --text-primary:var(--otw-ink);
+  --text-secondary:var(--otw-grey-700);
+  --text-inverse:var(--otw-white);
+  --rule-color:var(--otw-ink);
+}

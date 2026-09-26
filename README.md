@@ -46,6 +46,10 @@ changes.
   `price_from` blank means "on request".
 - **DJs**: edit the `djs` table. `published = false` hides a profile
   without deleting it. `genres`/`languages` are text arrays.
+- **Events (OTW nights)**: run `supabase/migrations/003_events.sql` once,
+  then add rows to `events`. `starts_at` drives upcoming vs past,
+  `sold_out` swaps the ticket link for a SOLD OUT tag, `published = false`
+  hides a night. Until 003 is run the listing simply shows its empty state.
 - **Quote requests & DJ applications**: read-only from the site's side —
   view and update `status` from the Table Editor (or Supabase's own admin
   view). There's no separate admin dashboard in this build; see DESIGN.md

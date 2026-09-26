@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './lib/supabaseClient.js';
-import Nav from './components/Nav.jsx';
+import { ENTITY_OF, resolveRoute } from './lib/routes.js';
+import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
 import Events from './pages/Events.jsx';
-import Artists from './pages/Artists.jsx';
-import Academy from './pages/Academy.jsx';
-import Label from './pages/Label.jsx';
 import Services from './pages/Services.jsx';
 import Packages from './pages/Packages.jsx';
 import Quote from './pages/Quote.jsx';
+import Academy from './pages/Academy.jsx';
+import Artists from './pages/Artists.jsx';
 import Join from './pages/Join.jsx';
+import Records from './pages/Records.jsx';
+import About from './pages/About.jsx';
 
 function useOtwData() {
   const [state, setState] = useState({ status: 'loading' });
@@ -19,11 +21,12 @@ function useOtwData() {
     let cancelled = false;
     (async () => {
       try {
-        const [categoriesRes, servicesRes, packagesRes, djsRes] = await Promise.all([
+        const [categoriesRes, servicesRes, packagesRes, djsRes, eventsRes] = await Promise.all([
           supabase.from('service_categories').select('*').order('sort_order'),
           supabase.from('services').select('*').order('sort_order'),
           supabase.from('packages').select('*').order('sort_order'),
           supabase.from('djs').select('*').eq('published', true).order('sort_order'),
+          supabase.from('events').select('*').eq('published', true).order('starts_at'),
         ]);
         const firstError = categoriesRes.error || servicesRes.error || packagesRes.error || djsRes.error;
         if (firstError) throw firstError;
@@ -34,6 +37,9 @@ function useOtwData() {
           services: servicesRes.data || [],
           packages: packagesRes.data || [],
           djs: djsRes.data || [],
+          // The events table arrives with migration 003. Until it's run, the
+          // listing just shows its empty state rather than breaking the site.
+          events: eventsRes.error ? [] : eventsRes.data || [],
         });
       } catch (err) {
         if (!cancelled) setState({ status: 'error', error: err });
@@ -46,66 +52,69 @@ function useOtwData() {
 }
 
 export default function App() {
-  const [tab, setTab] = useState(
-    () => (typeof window !== 'undefined' && window.location.hash.replace('#', '')) || 'home'
-  );
-  const [selectedDj, setSelectedDj] = useState(null);
+  const [route, setRoute] = useState(() => resolveRoute(typeof window !== 'undefined' ? window.location.hash : ''));
+  const [selectedArtist, setSelectedArtist] = useState(null);
   const [quotePrefill, setQuotePrefill] = useState(null);
   const data = useOtwData();
+  const entity = ENTITY_OF[route] || 'main';
 
   useEffect(() => {
-    if (typeof window !== 'undefined') window.location.hash = tab;
-  }, [tab]);
+    window.location.hash = route;
+  }, [route]);
 
-  const goToQuote = (prefillServices) => {
-    setQuotePrefill(prefillServices || null);
-    setTab('quote');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  useEffect(() => {
+    const onHash = () => setRoute(resolveRoute(window.location.hash));
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+
+  const go = (r) => {
+    setRoute(r);
+    window.scrollTo({ top: 0 });
   };
 
-  const go = (t) => {
-    setTab(t);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const goToQuote = (prefill) => {
+    setQuotePrefill(prefill || null);
+    go('quote');
   };
 
   return (
-    <div>
-      <Nav tab={tab} setTab={go} />
+    <>
+      <Header route={route} go={go} />
 
-      {data.status === 'loading' && (
-        <div style={{ padding: '120px 24px', textAlign: 'center', color: 'var(--ink-soft)' }}>
-          Loading OTW…
-        </div>
-      )}
+      <main data-entity={entity}>
+        {data.status === 'loading' && <div className="wrap status-page label">Loading</div>}
 
-      {data.status === 'error' && (
-        <div style={{ padding: '120px 24px', textAlign: 'center', color: 'var(--ink-soft)' }}>
-          Couldn't load the site's content right now — check back shortly, or if you're the site
-          owner, check the Supabase connection (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).
-        </div>
-      )}
+        {data.status === 'error' && (
+          <div className="wrap status-page">
+            <p className="body">
+              We couldn't load the site right now. Try again shortly. Site owner: check the Supabase
+              connection (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).
+            </p>
+          </div>
+        )}
 
-      {data.status === 'ready' && (
-        <>
-          {tab === 'home' && <Home goTo={go} />}
-          {tab === 'events' && (
-            <Events packages={data.packages} categories={data.categories} goTo={go} goToQuote={goToQuote} />
-          )}
-          {tab === 'artists' && (
-            <Artists djs={data.djs} initialSelected={selectedDj} onDone={() => setSelectedDj(null)} goTo={go} />
-          )}
-          {tab === 'academy' && <Academy goTo={go} />}
-          {tab === 'label' && <Label goTo={go} />}
-          {tab === 'services' && (
-            <Services categories={data.categories} services={data.services} goToQuote={goToQuote} />
-          )}
-          {tab === 'packages' && <Packages packages={data.packages} goToQuote={goToQuote} />}
-          {tab === 'quote' && <Quote categories={data.categories} services={data.services} prefill={quotePrefill} />}
-          {tab === 'join' && <Join />}
-        </>
-      )}
+        {data.status === 'ready' && (
+          <>
+            {route === 'home' && <Home events={data.events} go={go} />}
+            {route === 'events' && (
+              <Events events={data.events} categories={data.categories} packages={data.packages} go={go} goToQuote={goToQuote} />
+            )}
+            {route === 'services' && <Services categories={data.categories} services={data.services} goToQuote={goToQuote} />}
+            {route === 'packages' && <Packages packages={data.packages} goToQuote={goToQuote} />}
+            {route === 'quote' && <Quote key={JSON.stringify(quotePrefill)} categories={data.categories} prefill={quotePrefill} />}
+            {route === 'academy' && <Academy djs={data.djs} go={go} />}
+            {route === 'artists' && (
+              <Artists djs={data.djs} initialSelected={selectedArtist} onDone={() => setSelectedArtist(null)} go={go} goToQuote={goToQuote} />
+            )}
+            {route === 'join' && <Join />}
+            {route === 'records' && <Records />}
+            {route === 'about' && <About go={go} />}
+          </>
+        )}
+      </main>
 
-      <Footer setTab={go} />
-    </div>
+      <Footer go={go} />
+    </>
   );
 }

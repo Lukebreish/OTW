@@ -1,165 +1,77 @@
-import { useEffect, useRef, useState } from 'react';
+import EventCard from '../components/EventCard.jsx';
+import { HalfWorld } from '../components/ui.jsx';
 
-const FLIP_WORDS = [
-  { key: 'events', text: 'EVENTS', color: 'var(--amber)' },
-  { key: 'artists', text: 'ARTISTS', color: 'var(--violet)' },
-  { key: 'academy', text: 'ACADEMY', color: 'var(--magenta)' },
-  { key: 'label', text: 'LABEL', color: 'var(--cyan)' },
-];
-
-const DIVISIONS = [
+const BANDS = [
   {
-    key: 'events',
-    icon: '\u{1F39B}️',
-    color: 'var(--amber)',
-    tint: 'var(--amber-tint)',
-    for: 'For people throwing an event',
-    name: 'OTW Events',
-    pitch: 'We produce your event, start to finish — DJs, sound, lighting, staging.',
-    cta: 'Get a quote',
+    entity: 'events',
+    name: 'Events',
+    body: 'Club nights we run, and events we produce for you. DJs, sound, lighting and the crew to run it.',
+    cta: 'See events',
   },
   {
-    key: 'artists',
-    icon: '\u{1F3A7}',
-    color: 'var(--violet)',
-    tint: 'var(--violet-tint)',
-    for: 'For venues & promoters',
-    name: 'OTW Artists',
-    pitch: "Meet OTW's roster of artists, booked for your venue or night.",
-    cta: 'Meet the artists',
+    entity: 'academy',
+    name: 'Academy',
+    body: 'Learn to mix and produce with the people who play out every weekend. Our artists roster lives here too.',
+    cta: 'Go to Academy',
   },
   {
-    key: 'academy',
-    icon: '\u{1F393}',
-    color: 'var(--magenta)',
-    tint: 'var(--magenta-tint)',
-    for: 'For aspiring DJs & producers',
-    name: 'OTW Academy',
-    pitch: 'Learn to DJ and produce with mentorship and studio time.',
-    cta: "See what's coming",
-  },
-  {
-    key: 'label',
-    icon: '\u{1F4BF}',
-    color: 'var(--cyan)',
-    tint: 'var(--cyan-tint)',
-    for: 'For artists & platforms',
-    name: 'OTW Label',
-    pitch: 'Music released under the OTW name — tracks, EPs, distribution.',
-    cta: "See what's coming",
+    entity: 'records',
+    name: 'Records',
+    body: 'Music released under the OTW name. Tracks, EPs and distribution for artists in and around the crew.',
+    cta: 'Go to Records',
   },
 ];
 
-function useFlipWord(intervalMs = 2200, exitMs = 380) {
-  const [index, setIndex] = useState(0);
-  const [prevIndex, setPrevIndex] = useState(null);
-  const exitTimeout = useRef(null);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setIndex((current) => {
-        setPrevIndex(current);
-        if (exitTimeout.current) clearTimeout(exitTimeout.current);
-        exitTimeout.current = setTimeout(() => setPrevIndex(null), exitMs);
-        return (current + 1) % FLIP_WORDS.length;
-      });
-    }, intervalMs);
-    return () => {
-      clearInterval(id);
-      if (exitTimeout.current) clearTimeout(exitTimeout.current);
-    };
-  }, [intervalMs, exitMs]);
-
-  return { word: FLIP_WORDS[index], prevWord: prevIndex !== null ? FLIP_WORDS[prevIndex] : null, index };
-}
-
-export default function Home({ goTo }) {
-  const { word, prevWord, index } = useFlipWord();
+export default function Home({ events, go }) {
+  const now = Date.now();
+  const next = events.find((e) => new Date(e.starts_at).getTime() >= now);
 
   return (
     <>
-      <section className="hub-hero">
-        <div className="hub-hero-glow" style={{ '--glow-color': word.color }} />
-        <div className="section-wide hub-hero-inner">
-          <div className="hub-hero-lockup">
-            <span className="hub-hero-otw">OTW</span>
-            <span className="hub-hero-divider" style={{ background: word.color }} />
-            <span className="flip-stage">
-              {prevWord && (
-                <span className="flip-word leave" style={{ '--word-color': prevWord.color }}>
-                  {prevWord.text}
-                </span>
-              )}
-              <span key={index} className="flip-word enter" style={{ '--word-color': word.color }}>
-                {word.text}
-              </span>
-            </span>
+      <section className="hero hero-home">
+        <div className="hero-rise" aria-hidden="true" />
+        <div className="wrap hero-inner">
+          <div className="eyebrow label"><HalfWorld size={16} />Brussels · Events · Academy · Records</div>
+          <h1>Off<br />The<br />World</h1>
+          <p className="lead">One crew. We throw the nights, teach the craft and release the music.</p>
+          <div className="actions">
+            <button className="btn btn-primary" onClick={() => go('events')}>See events</button>
+            <button className="btn btn-secondary" onClick={() => go('about')}>About OTW</button>
           </div>
-          <p className="hub-hero-sub">
-            One name, four ways in — production, artists, training and releases, all under one roof.
-          </p>
-          <div className="hero-actions" style={{ justifyContent: 'center' }}>
-            <button className="btn-solid" onClick={() => goTo('events')}>Get a quote</button>
-            <button
-              className="btn-outline"
-              onClick={() => document.getElementById('divisions')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-            >
-              See what we do
+        </div>
+      </section>
+
+      <section className="section" data-entity="events">
+        <div className="wrap">
+          <div className="section-head">
+            <div>
+              <div className="eyebrow label"><HalfWorld size={16} />Next up</div>
+              <h2>{next ? 'Next event' : 'Planning an event?'}</h2>
+            </div>
+            <button className="btn btn-ghost" onClick={() => go(next ? 'events' : 'quote')}>
+              {next ? 'All events →' : 'Get a quote →'}
             </button>
           </div>
+          {next ? (
+            <div className="card-grid"><EventCard event={next} /></div>
+          ) : (
+            <p className="body">
+              No public nights on the calendar yet. We also produce private and corporate events.
+              Tell us what you have in mind and we'll put a setup together.
+            </p>
+          )}
         </div>
       </section>
 
-      <section className="division-section" id="divisions">
-        <div className="section-wide">
-          <div className="division-head">
-            <h2>Four doors, one OTW</h2>
-            <p>Pick the one that's you — each has its own path from here.</p>
+      {BANDS.map((b) => (
+        <section key={b.entity} className="band" data-entity={b.entity}>
+          <div className="wrap band-inner">
+            <h2>{b.name}</h2>
+            <p>{b.body}</p>
+            <button className="btn" onClick={() => go(b.entity)}>{b.cta} →</button>
           </div>
-
-          <div className="division-grid">
-            {DIVISIONS.map((d) => (
-              <button
-                key={d.key}
-                type="button"
-                className="division-card"
-                style={{ '--card-color': d.color, '--card-tint': d.tint }}
-                onClick={() => goTo(d.key)}
-              >
-                <div className="division-icon" aria-hidden="true">{d.icon}</div>
-                <div className="division-for">{d.for}</div>
-                <div className="division-name">{d.name}</div>
-                <div className="division-pitch">{d.pitch}</div>
-                <div className="division-cta">
-                  {d.cta}
-                  <span className="arrow" aria-hidden="true">→</span>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          <div className="pipeline">
-            <div className="pipeline-label">How it fits together</div>
-            <div className="pipeline-row">
-              <span className="pipeline-step" style={{ '--step-tint': 'var(--magenta-tint)', '--step-color': 'var(--magenta)' }}>
-                🎓 Academy trains
-              </span>
-              <span className="pipeline-arrow" aria-hidden="true">→</span>
-              <span className="pipeline-step" style={{ '--step-tint': 'var(--violet-tint)', '--step-color': 'var(--violet)' }}>
-                🎧 Artists books
-              </span>
-              <span className="pipeline-arrow" aria-hidden="true">→</span>
-              <span className="pipeline-step" style={{ '--step-tint': 'var(--amber-tint)', '--step-color': 'var(--amber)' }}>
-                🎛️ Events produces
-              </span>
-              <span className="pipeline-arrow" aria-hidden="true">→</span>
-              <span className="pipeline-step" style={{ '--step-tint': 'var(--cyan-tint)', '--step-color': 'var(--cyan)' }}>
-                💿 Label releases
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      ))}
     </>
   );
 }

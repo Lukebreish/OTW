@@ -1,0 +1,18 @@
+:root{
+  --font-logo:"Unbounded",sans-serif;          /* logo letters only */
+  --font-display:"Archivo Expanded","Archivo",sans-serif; /* 800 headlines, 700 labels */
+  --font-body:"Archivo",sans-serif;            /* 400 body, 600 emphasis/UI */
+  --text-xs:0.75rem;   /* 12 */
+  --text-sm:0.875rem;  /* 14 */
+  --text-md:1rem;      /* 16 */
+  --text-lg:1.125rem;  /* 18 */
+  --text-xl:1.75rem;   /* 28 */
+  --text-2xl:2.5rem;   /* 40 */
+  --text-3xl:4rem;     /* 64 */
+  --text-4xl:6rem;     /* 96 */
+  --text-hero:clamp(4rem,12vw,11rem);
+  --leading-display:0.92;
+  --leading-body:1.5;
+  --tracking-label:0.14em;
+  --tracking-display:-0.01em;
+}

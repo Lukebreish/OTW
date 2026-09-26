@@ -1,79 +1,67 @@
-# Design System — Off The World (OTW)
+# Design System — OTW Off The World
 
-First-pass design system for review. Nothing here is locked — treat it as a
-proposal to react to, not a finished brand.
+The site follows the OTW design system package (`Branding/DS.zip`,
+`otw-ds-package`). Its `readme.md` is the source of truth. This file records
+how the site maps onto it. Do not invent new colours, fonts or radii.
 
-## Product Context
-- **What this is:** An end-to-end event entertainment and production company
-  (DJs, sound, lighting, staging, installation, photo/video), plus a network
-  of DJs customers can browse and book through.
-- **Who it's for:** People planning an event who don't necessarily know what
-  equipment they need — private parties, weddings, corporate events, brand
-  events, clubs — and DJs who want to join a curated network rather than
-  submit a CV.
-- **Project type:** React + Vite SPA with a Supabase backend (services,
-  packages, DJs, quote requests, DJ applications).
+## Where it lives in the code
+- `src/styles/ds/` — the DS tokens and fonts, copied verbatim from the
+  package (`styles.css` is the entry point). Update these only by re-copying
+  from a newer package.
+- `src/styles/site.css` — every site component, built only on those tokens.
+- `public/logos/` — the supplied SVG logos the site uses (all 56 are in
+  `Branding/DS.zip`; copy more from there). Always use these; never retype
+  or recolour the logo.
+- `src/components/ui.jsx` — `HalfWorld`, `Icon` (inlined Lucide, 2px, square
+  caps), `Logo`.
 
-## Aesthetic Direction
-- **Direction:** Professional and classy, with an energetic, contemporary
-  edge — closer to a well-run production company than a nightclub flyer or
-  a generic corporate events agency.
-- **Concept:** A lighting rig, not a nightclub. The dark stage-surface
-  background with two accent "lights" — a warm amber for trust/commercial
-  moments (CTAs, packages) and a cool violet used only for the creative,
-  interactive layer (the services bubble field, the quote builder's
-  recommendation) — is a deliberate two-light system tied to what OTW
-  actually does, rather than a single neon accent.
-- **What to avoid:** neon nightclub clichés, stock-photo corporate imagery,
-  a self-serve marketplace feel, dense information-heavy layouts.
+## Entities and routes
+One master identity, three entities. `data-entity` on a wrapper switches
+`--accent`. `src/lib/routes.js` maps every route to one entity.
 
-## Typography
-- **Display/headings:** Bricolage Grotesque — a geometric sans with enough
-  irregularity to read as contemporary/creative rather than a generic
-  system font, without borrowing Studio Margarita's Space Grotesk.
-- **Body/UI:** Inter, for legibility at small sizes (forms, chips, labels).
-- **Labels:** sentence case, not tracked-out uppercase — OTW's own choice,
-  distinct from Studio Margarita's uppercase label convention.
+| Entity | Colour | Routes |
+| --- | --- | --- |
+| Master | gold `#D4AA4C` | home, about |
+| Events | green `#8FBF5A` | events (nights + production), services, packages, quote |
+| Academy | coral `#FF5A3C` | academy, artists, join |
+| Records | teal `#5CC8D4` | records (formerly "Label"; `#label` still resolves) |
 
-## Color
-- **Background:** `#0d0d0f` (near-black stage surface)
-- **Surface:** `#17171a` / **Surface 2:** `#1f1f23`
-- **Ink:** `#f4f2ee` / **Ink-soft:** `#9d9aa0`
-- **Rule:** `#2a2a2f`
-- **Amber (primary accent):** `#d7a94a` — CTAs, packages, trust moments
-- **Violet (creative accent):** `#8b7bff` — services bubbles, quote builder
-  recommendation, used nowhere else
-- Dark-only for now; revisit if a real need for a light mode appears.
+The header shows the current entity's horizontal logo; the active nav item
+gets a 16×8 half-world in its entity colour. "Get a quote" always uses the
+Events accent.
 
-## Layout
-- `section-narrow` (640px) for forms and text-heavy content, `section-wide`
-  (1200px) for grids.
-- Small consistent border-radius (3px) on interactive elements — a deliberate
-  departure from Studio Margarita's "0 always," so OTW doesn't visually
-  inherit the print-gallery rule from the site it was structurally built on.
-- **Signature motif:** the floating bubble field for services — the one
-  place motion and the violet accent are used together, per the brief.
+## Rules applied (from the DS readme)
+- Ink `#0F1113` site, white text, 2px white rules between sections, cells,
+  rows and cards. Flush left, no centred copy.
+- 0 radius everywhere. The half-world is the only curve.
+- No shadows, gradients, blur or transparency. No emoji.
+- Headlines: Archivo Expanded 800, caps, 0.92 leading. Labels: Expanded 700,
+  12–14px, 0.14em tracking. Body: Archivo 400, 16–18px. Unbounded is logo only
+  (served via the SVGs).
+- Buttons: primary (accent fill, ink label, inverts on hover), secondary (2px
+  border), ghost (text + →). 48px / 40px. Disabled 45%.
+- Photography grayscale. Release artwork is the only colour image.
+- Motion: 120–200ms colour transitions; hero half-world rises on load (400ms,
+  off under `prefers-reduced-motion`).
+- Copy: short, "we"/"you", no exclamation marks, middle dot ` · ` between
+  facts, dates as `SAT 14 NOV`, 24-hour times.
 
-## Motion
-- Bubbles idle-float gently (respecting `prefers-reduced-motion`); everything
-  else is instant state changes or short hover transitions. No entrance
-  animations on scroll.
+## Components
+Header, Footer, Button, Tag (also used as toggle chips in the quote builder),
+EventCard, CtaBar, TextField/Select (2px bottom border), ruled cells,
+half-world list, entity bands (full accent fields on home), accent field
+block (quote recommendation).
 
-## Content Architecture
-- Client side: Home → Services → Packages → Get a Quote (5-step builder with
-  a client-side recommendation preview; OTW reviews and can override every
-  recommendation from the Supabase dashboard before a quote goes out).
-- DJ side: DJs directory (click a face to expand their profile in place,
-  same pattern as Studio Margarita's artist directory) → Join OTW
-  application → OTW reviews in Supabase → profile published.
-- No custom admin dashboard in this pass — DJs, services, packages and
-  incoming requests are managed from the Supabase Table Editor, same
-  workflow as Studio Margarita used for artists/artwork. A dedicated admin
-  UI is a reasonable Phase 2 if that workflow starts to feel limiting.
+Not built yet (no content): CourseCard, ScheduleTable, ReleaseCard,
+Tracklist. Add them when courses/releases get Supabase tables.
 
 ## Decisions Log
 | Date | Decision | Rationale |
 |------|----------|-----------|
-| 2026-09-21 | Documented as first-pass DESIGN.md, not a finished system | Brief calls for repurposing Studio Margarita's *framework*, not its visual identity — flagging every choice as reviewable |
-| 2026-09-21 | Two-accent (amber/violet) system instead of one bright accent on near-black | Grounded in the brief's own subject matter (lighting), and avoids the generic "near-black + single bright accent" AI-design default |
-| 2026-09-21 | No admin dashboard, no email automation in MVP | Brief lists these as full requirements, but Studio Margarita shipped without a custom admin by using Supabase's own Table Editor — same trade-off keeps this buildable in one pass; flagged as Phase 2 |
+| 2026-09-21 | First-pass amber/violet system | Superseded |
+| 2026-09-26 | Adopted the OTW DS package in full | Official brand system now exists |
+| 2026-09-26 | Label renamed Records | Matches DS entity |
+| 2026-09-26 | Artists roster + Join moved under Academy | DS has three entities; artists sit with training |
+| 2026-09-26 | Events = public nights + production/quote flow | Keeps the revenue flow and adds the DS events listing |
+| 2026-09-26 | Bubble field and flip hero removed | Round bubbles, glow and emoji break the DS rules (one curve, no gradients, no emoji). Replaced by ruled category rows and tag toggles |
+| 2026-09-26 | New `events` table (migration 003) | Nights live in Supabase like all other content |

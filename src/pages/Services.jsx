@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { iconFor } from '../lib/categoryIcons.js';
+import { HalfWorld } from '../components/ui.jsx';
 
 export default function Services({ categories, services, goToQuote }) {
   const [activeId, setActiveId] = useState(categories[0]?.id ?? null);
@@ -8,46 +8,39 @@ export default function Services({ categories, services, goToQuote }) {
 
   return (
     <section className="section">
-      <div className="section-wide">
+      <div className="wrap">
+        <div className="eyebrow label"><HalfWorld size={16} />OTW Events · Production</div>
         <h1>What we bring</h1>
-        <p className="lead" style={{ marginTop: 12 }}>
-          Pick a category to see what's in it. Nothing here is exclusive — most events end up
-          mixing a few.
+        <p className="lead" style={{ marginTop: 'var(--space-5)' }}>
+          Pick a category to see what's in it. Most events mix a few.
         </p>
 
-        <div className="bubble-field">
-          {categories.map((c, i) => (
-            <button
-              key={c.id}
-              className={`bubble ${c.id === activeId ? 'active' : ''}`}
-              style={{ '--float-delay': `${(i % 5) * 0.6}s` }}
-              onClick={() => setActiveId(c.id)}
-              aria-pressed={c.id === activeId}
-            >
-              <span className="bubble-icon" aria-hidden="true">{iconFor(c.slug)}</span>
+        <div className="tags" style={{ marginTop: 'var(--space-7)' }}>
+          {categories.map((c) => (
+            <button key={c.id} className="tag tag-lg" aria-pressed={c.id === activeId} onClick={() => setActiveId(c.id)}>
               {c.name}
             </button>
           ))}
         </div>
 
         {active && (
-          <div className="bubble-detail panel">
-            <h3>{active.name}</h3>
-            {active.description && <p style={{ marginTop: 8 }}>{active.description}</p>}
-            <div className="bubble-detail-list">
-              {activeServices.length > 0 ? (
-                activeServices.map((s) => (
-                  <span key={s.id} className="bubble-detail-item">{s.name}</span>
-                ))
-              ) : (
-                <span className="small">Details for this category are being added — ask us directly.</span>
-              )}
+          <div className="split" style={{ marginTop: 'var(--space-7)' }}>
+            <div>
+              <h2>{active.name}</h2>
+              {active.description && <p className="body" style={{ marginTop: 'var(--space-5)' }}>{active.description}</p>}
+              <div className="actions">
+                <button className="btn btn-primary" onClick={() => goToQuote([active.slug])}>Quote this</button>
+              </div>
             </div>
-            <div style={{ marginTop: 24 }}>
-              <button className="btn-solid" onClick={() => goToQuote([active.slug])}>
-                Get a quote for {active.name.toLowerCase()}
-              </button>
-            </div>
+            {activeServices.length > 0 ? (
+              <ul className="hw-list">
+                {activeServices.map((s) => (
+                  <li key={s.id}><HalfWorld size={16} /><span><strong style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{s.name}</strong>{s.description ? ` · ${s.description}` : ''}</span></li>
+                ))}
+              </ul>
+            ) : (
+              <p className="empty">Details for this category are on the way. Ask us directly.</p>
+            )}
           </div>
         )}
       </div>
