@@ -50,6 +50,16 @@ changes.
   then add rows to `events`. `starts_at` drives upcoming vs past,
   `sold_out` swaps the ticket link for a SOLD OUT tag, `published = false`
   hides a night. Until 003 is run the listing simply shows its empty state.
+- **Academy & Records**: run `supabase/migrations/004_academy_records.sql`
+  once (it seeds placeholder courses and weekly classes — edit them in
+  `courses` / `course_sessions`). Set a course's `booking_url` to its Plug The
+  Jack listing and its Enrol button goes there instead of the on-site form.
+  Add releases to `releases` (catalogue no. as `id`, e.g. `OTW001`). A
+  future `release_date` + `presave_url` shows the pre-save bar.
+- **Course bookings & demos**: read from `course_bookings` and
+  `demo_submissions`. Bookings arrive as `pending_payment`; email payment
+  details, then set `paid` / `confirmed`. Online card payment is a
+  placeholder — see `src/lib/payments.js` to wire Stripe or Mollie.
 - **Quote requests & DJ applications**: read-only from the site's side —
   view and update `status` from the Table Editor (or Supabase's own admin
   view). There's no separate admin dashboard in this build; see DESIGN.md

@@ -225,8 +225,8 @@ button.tag[aria-pressed="true"] { background: var(--accent); border-color: var(-
 @media (max-width: 860px) { .cat-row { grid-template-columns: 1fr; gap: var(--space-4); } }
 
 /* ---------- CtaBar ---------- */
-.cta-bar { display: flex; width: 100%; justify-content: space-between; align-items: center; gap: var(--space-5); padding: var(--space-6) var(--gutter); background: var(--accent); color: var(--on-accent); font-family: var(--font-display); font-weight: 800; font-size: clamp(1.25rem, 3vw, var(--text-2xl)); text-transform: uppercase; line-height: 1; text-align: left; transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
-.cta-bar:hover { background: var(--otw-ink); color: var(--accent); }
+.cta-bar { text-decoration: none; display: flex; width: 100%; justify-content: space-between; align-items: center; gap: var(--space-5); padding: var(--space-6) var(--gutter); background: var(--accent); color: var(--on-accent); font-family: var(--font-display); font-weight: 800; font-size: clamp(1.25rem, 3vw, var(--text-2xl)); text-transform: uppercase; line-height: 1; text-align: left; transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.cta-bar:hover, a.cta-bar:hover { background: var(--otw-ink); color: var(--accent); }
 
 /* ---------- Accent field (full colour block) ---------- */
 .field-block { background: var(--accent); color: var(--on-accent); padding: var(--space-6); }
@@ -265,3 +265,86 @@ button.tag[aria-pressed="true"] { background: var(--accent); border-color: var(-
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
 @media (max-width: 860px) { .split { grid-template-columns: 1fr; gap: var(--space-7); } }
 .icon { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; fill: none; }
+
+/* ---------- Academy: tracks ---------- */
+.track-cell { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-6) !important; }
+.track-cell h2 { font-size: clamp(1.75rem, 4vw, var(--text-3xl)); }
+.track-actions { display: flex; flex-wrap: wrap; gap: var(--space-6); margin-top: auto; padding-top: var(--space-3); }
+
+/* ---------- CourseCard ---------- */
+.course-card { display: flex; flex-direction: column; border-top: var(--rule) solid var(--accent); padding-top: var(--space-5); }
+.course-top { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); min-height: 32px; }
+.course-title { font-size: var(--text-xl); margin-top: var(--space-4); }
+.course-summary { margin-top: var(--space-3); }
+.course-meta { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: var(--space-5); border-top: var(--rule) solid var(--rule-color); border-bottom: var(--rule) solid var(--rule-color); }
+.course-meta > div { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3) var(--space-3) var(--space-3) 0; }
+.course-meta > div + div { border-left: var(--rule) solid var(--rule-color); padding-left: var(--space-3); }
+.course-meta .label:not(.label-xs) { font-size: var(--text-xs); }
+.course-modules { margin-top: var(--space-4); }
+.course-modules li { padding: var(--space-3) 0; font-size: var(--text-sm); }
+.course-foot { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); margin-top: auto; padding-top: var(--space-5); flex-wrap: wrap; }
+.course-price { font-family: var(--font-display); font-weight: 800; font-size: var(--text-xl); text-transform: uppercase; }
+.course-actions { display: flex; align-items: center; gap: var(--space-4); }
+.card-grid > .course-card { height: 100%; }
+
+/* ---------- ScheduleTable ---------- */
+.schedule { border-top: var(--rule) solid var(--rule-color); }
+.schedule-row { display: grid; grid-template-columns: 90px 150px 1fr 110px 110px; gap: var(--space-4); align-items: center; min-height: 64px; padding: var(--space-3) var(--space-4); border-bottom: var(--rule) solid var(--rule-color); }
+.schedule-head { min-height: 44px; color: var(--text-secondary); }
+.schedule-day { font-family: var(--font-display); font-weight: 800; font-size: var(--text-xl); line-height: 1; }
+.schedule-row strong { font-weight: 600; }
+.schedule-cta { text-align: right; }
+.schedule-row.is-next { background: var(--accent); color: var(--on-accent); }
+.schedule-row.is-next .btn-ghost { color: var(--on-accent); }
+.schedule-row.is-next .btn-ghost:hover { color: var(--otw-white); }
+@media (max-width: 760px) {
+  .schedule-head { display: none; }
+  .schedule-row { grid-template-columns: 64px 1fr auto; row-gap: var(--space-1); }
+  .schedule-row > :nth-child(1) { grid-row: span 2; }
+  .schedule-row > :nth-child(3) { grid-column: 2; }
+  .schedule-row > :nth-child(4) { grid-row: 1; grid-column: 3; }
+  .schedule-row > :nth-child(5) { grid-row: 2; grid-column: 3; }
+}
+
+/* ---------- Enrol / payment ---------- */
+.progress-2 { grid-template-columns: 1fr 1fr; margin-top: 0; }
+.summary-cells > div { display: flex; flex-direction: column; gap: var(--space-2); }
+.pay-options { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-top: var(--space-6); }
+.pay-option { display: flex; flex-direction: column; gap: var(--space-2); text-align: left; padding: var(--space-5); border: var(--rule) solid var(--rule-color); transition: border-color var(--duration-fast) var(--ease-out); }
+.pay-option:hover:not(:disabled) { border-color: var(--accent); }
+.pay-option[aria-checked="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.pay-option[aria-checked="true"] .muted { color: var(--on-accent); }
+.pay-option:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width: 640px) { .pay-options { grid-template-columns: 1fr; } }
+
+/* ---------- FAQ ---------- */
+.faq { border-top: var(--rule) solid var(--rule-color); }
+.faq details { border-bottom: var(--rule) solid var(--rule-color); }
+.faq summary { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding: var(--space-5) 0; cursor: pointer; list-style: none; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { color: var(--accent); }
+.faq-mark { width: 16px; height: 8px; background: var(--otw-grey-700); border-radius: 999px 999px 0 0; flex: none; transition: background-color var(--duration-fast) var(--ease-out); }
+.faq details[open] .faq-mark, .faq summary:hover .faq-mark { background: var(--accent); }
+.faq details p { padding-bottom: var(--space-5); max-width: 60ch; }
+
+/* ---------- Records ---------- */
+.release-hero { display: grid; grid-template-columns: 1fr minmax(260px, 520px); gap: var(--space-8); align-items: end; }
+.release-art { aspect-ratio: 1; background: var(--surface-raised); display: flex; align-items: flex-end; padding: var(--space-4); overflow: hidden; margin-bottom: var(--space-5); }
+.release-art img { width: calc(100% + var(--space-4) * 2); height: calc(100% + var(--space-4) * 2); max-width: none; margin: calc(var(--space-4) * -1); object-fit: cover; }
+.release-art-lg { margin-bottom: 0; border: var(--rule) solid var(--accent); }
+.release-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-7) var(--space-6); }
+.release-title { font-size: var(--text-xl); margin: var(--space-3) 0 var(--space-2); }
+@media (max-width: 1000px) { .release-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 860px) { .release-hero { grid-template-columns: 1fr; } }
+
+/* ---------- Events: supply grid ---------- */
+.supply-cell { display: flex; flex-direction: column; gap: var(--space-3); text-align: left; min-height: 260px; transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.supply-cell h3 { font-size: var(--text-lg); }
+.supply-cell ul { list-style: none; padding: 0; margin: 0; color: var(--text-secondary); font-size: var(--text-sm); }
+.supply-cell li { padding: var(--space-1) 0; }
+.supply-cta { margin-top: auto; color: var(--accent); }
+.supply-cell:hover { background: var(--accent); color: var(--on-accent); }
+.supply-cell:hover .muted, .supply-cell:hover ul, .supply-cell:hover .supply-cta { color: var(--on-accent); }
+.course-top { flex-wrap: wrap; }
+.course-top .tag { white-space: nowrap; }
+@media (max-width: 640px) { .supply-cell { min-height: 0; } .supply-cta { margin-top: var(--space-3); } }

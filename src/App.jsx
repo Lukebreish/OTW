@@ -21,12 +21,15 @@ function useOtwData() {
     let cancelled = false;
     (async () => {
       try {
-        const [categoriesRes, servicesRes, packagesRes, djsRes, eventsRes] = await Promise.all([
+        const [categoriesRes, servicesRes, packagesRes, djsRes, eventsRes, coursesRes, sessionsRes, releasesRes] = await Promise.all([
           supabase.from('service_categories').select('*').order('sort_order'),
           supabase.from('services').select('*').order('sort_order'),
           supabase.from('packages').select('*').order('sort_order'),
           supabase.from('djs').select('*').eq('published', true).order('sort_order'),
           supabase.from('events').select('*').eq('published', true).order('starts_at'),
+          supabase.from('courses').select('*').eq('published', true).order('sort_order'),
+          supabase.from('course_sessions').select('*').order('sort_order'),
+          supabase.from('releases').select('*').eq('published', true).order('id', { ascending: false }),
         ]);
         const firstError = categoriesRes.error || servicesRes.error || packagesRes.error || djsRes.error;
         if (firstError) throw firstError;
@@ -40,6 +43,10 @@ function useOtwData() {
           // The events table arrives with migration 003. Until it's run, the
           // listing just shows its empty state rather than breaking the site.
           events: eventsRes.error ? [] : eventsRes.data || [],
+          // Migration 004 tables: same graceful fallback.
+          courses: coursesRes.error ? [] : coursesRes.data || [],
+          sessions: sessionsRes.error ? [] : sessionsRes.data || [],
+          releases: releasesRes.error ? [] : releasesRes.data || [],
         });
       } catch (err) {
         if (!cancelled) setState({ status: 'error', error: err });
@@ -98,17 +105,19 @@ export default function App() {
           <>
             {route === 'home' && <Home events={data.events} go={go} />}
             {route === 'events' && (
-              <Events events={data.events} categories={data.categories} packages={data.packages} go={go} goToQuote={goToQuote} />
+              <Events events={data.events} categories={data.categories} services={data.services} packages={data.packages} djs={data.djs} go={go} goToQuote={goToQuote} />
             )}
             {route === 'services' && <Services categories={data.categories} services={data.services} goToQuote={goToQuote} />}
             {route === 'packages' && <Packages packages={data.packages} goToQuote={goToQuote} />}
             {route === 'quote' && <Quote key={JSON.stringify(quotePrefill)} categories={data.categories} prefill={quotePrefill} />}
-            {route === 'academy' && <Academy djs={data.djs} go={go} />}
+            {route === 'academy' && (
+              <Academy courses={data.courses} sessions={data.sessions} djs={data.djs} go={go} goToQuote={goToQuote} />
+            )}
             {route === 'artists' && (
               <Artists djs={data.djs} initialSelected={selectedArtist} onDone={() => setSelectedArtist(null)} go={go} goToQuote={goToQuote} />
             )}
             {route === 'join' && <Join />}
-            {route === 'records' && <Records />}
+            {route === 'records' && <Records releases={data.releases} />}
             {route === 'about' && <About go={go} />}
           </>
         )}

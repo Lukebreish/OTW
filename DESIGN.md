@@ -9,8 +9,7 @@ how the site maps onto it. Do not invent new colours, fonts or radii.
   package (`styles.css` is the entry point). Update these only by re-copying
   from a newer package.
 - `src/styles/site.css` — every site component, built only on those tokens.
-- `public/logos/` — the supplied SVG logos the site uses (all 56 are in
-  `Branding/DS.zip`; copy more from there). Always use these; never retype
+- `public/logos/` — the 56 supplied SVG logos. Always use these; never retype
   or recolour the logo.
 - `src/components/ui.jsx` — `HalfWorld`, `Icon` (inlined Lucide, 2px, square
   caps), `Logo`.
@@ -52,8 +51,13 @@ EventCard, CtaBar, TextField/Select (2px bottom border), ruled cells,
 half-world list, entity bands (full accent fields on home), accent field
 block (quote recommendation).
 
-Not built yet (no content): CourseCard, ScheduleTable, ReleaseCard,
-Tracklist. Add them when courses/releases get Supabase tables.
+Academy/Records: CourseCard (coral rule, Starts/Length/Level ruled cells,
+price, ENROL →), ScheduleTable (next open row in accent fill), EnrolForm
+(details → payment step), ReleaseCard (square colour artwork), FAQ (ruled
+details rows, half-world marker lights up when open), ArtistsGrid (shared by
+Artists, Academy and Events).
+
+Not built yet: course and release detail pages, Tracklist.
 
 ## Decisions Log
 | Date | Decision | Rationale |
@@ -65,3 +69,7 @@ Tracklist. Add them when courses/releases get Supabase tables.
 | 2026-09-26 | Events = public nights + production/quote flow | Keeps the revenue flow and adds the DS events listing |
 | 2026-09-26 | Bubble field and flip hero removed | Round bubbles, glow and emoji break the DS rules (one curve, no gradients, no emoji). Replaced by ruled category rows and tag toggles |
 | 2026-09-26 | New `events` table (migration 003) | Nights live in Supabase like all other content |
+| 2026-09-26 | Events page leads with event management and DJ booking; OTW nights moved lower | The site's job is winning clients; nights are secondary |
+| 2026-09-26 | Academy: courses, schedule, enrol + payment placeholder, artists spotlight | Academy sells courses and showcases the roster |
+| 2026-09-26 | Courses can link out via `booking_url` (e.g. Plug The Jack) or book on-site | DJ courses are also sold through Plug The Jack |
+| 2026-09-26 | Payment is a placeholder (`src/lib/payments.js`); bookings save as pending_payment, paid by bank transfer | No payment provider yet |
