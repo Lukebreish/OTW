@@ -82,3 +82,4 @@ Not built yet: course and release detail pages, Tracklist.
 | 2026-09-26 | Home order: Events → proof → Academy (DJs, courses) → Records | Events is the main revenue line; Academy artists feed it |
 | 2026-09-26 | Proof sections (stats, clients, testimonials) render only with real rows (migration 005) | No placeholder claims on a live site |
 | 2026-09-26 | OTW CERTIFIED tag driven by `djs.certified` | Certification must be a real, per-artist decision |
+| 2026-09-30 | Internal ops page at `#ops` (not in nav): Supabase Auth logins, bookings list, per-booking checklist grouped Sell it / Run it / Learn from it | Turns the event management SOP into something tracked per booking; same DS components (ruled rows, tags, 2px square checkboxes, accent progress bars) |

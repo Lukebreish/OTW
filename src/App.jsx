@@ -13,6 +13,7 @@ import Artists from './pages/Artists.jsx';
 import Join from './pages/Join.jsx';
 import Records from './pages/Records.jsx';
 import About from './pages/About.jsx';
+import Ops from './pages/Ops.jsx';
 
 function useOtwData() {
   const [state, setState] = useState({ status: 'loading' });
@@ -66,7 +67,12 @@ function useOtwData() {
 }
 
 export default function App() {
-  const [route, setRoute] = useState(() => resolveRoute(typeof window !== 'undefined' ? window.location.hash : ''));
+  const [route, setRoute] = useState(() => {
+    if (typeof window === 'undefined') return 'home';
+    // Auth email links land on /?to=ops
+    if (new URLSearchParams(window.location.search).get('to') === 'ops') return 'ops';
+    return resolveRoute(window.location.hash);
+  });
   const [selectedArtist, setSelectedArtist] = useState(null);
   const [quotePrefill, setQuotePrefill] = useState(null);
   const data = useOtwData();
@@ -98,9 +104,11 @@ export default function App() {
       <Header route={route} go={go} />
 
       <main data-entity={entity}>
-        {data.status === 'loading' && <div className="wrap status-page label">Loading</div>}
+        {route === 'ops' && <Ops />}
 
-        {data.status === 'error' && (
+        {route !== 'ops' && data.status === 'loading' && <div className="wrap status-page label">Loading</div>}
+
+        {route !== 'ops' && data.status === 'error' && (
           <div className="wrap status-page">
             <p className="body">
               We couldn't load the site right now. Try again shortly. Site owner: check the Supabase
@@ -109,7 +117,7 @@ export default function App() {
           </div>
         )}
 
-        {data.status === 'ready' && (
+        {route !== 'ops' && data.status === 'ready' && (
           <>
             {route === 'home' && <Home data={data} go={go} goToQuote={goToQuote} />}
             {route === 'events' && (
@@ -131,7 +139,7 @@ export default function App() {
         )}
       </main>
 
-      {route !== 'quote' && (
+      {route !== 'quote' && route !== 'ops' && (
         <button className="sticky-cta btn btn-primary" data-entity="events" onClick={() => goToQuote()}>
           Get a quote →
         </button>

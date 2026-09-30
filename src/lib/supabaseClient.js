@@ -10,4 +10,5 @@ if (!url || !anonKey) {
   );
 }
 
-export const supabase = createClient(url, anonKey);
+// PKCE keeps auth codes in the query string, out of the way of hash routing.
+export const supabase = createClient(url, anonKey, { auth: { flowType: 'pkce' } });

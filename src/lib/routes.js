@@ -12,6 +12,7 @@ export const ENTITY_OF = {
   artists: 'academy',
   join: 'academy',
   records: 'records',
+  ops: 'main', // internal, not in NAV
 };
 
 // Old hashes from the previous site keep working.
