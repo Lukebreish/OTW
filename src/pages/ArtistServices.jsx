@@ -6,7 +6,7 @@ import Honeypot from '../components/Honeypot.jsx';
 const SERVICES = [
   ['events', 'Events', 'Your own night, launch or showcase, produced for you.'],
   ['photoshoot', 'Photoshoot', 'Press and social photos that look like your sound.'],
-  ['ghost-production', 'Ghost production', 'Tracks made to your brief and references.'],
+  ['ghost-production', 'Production', 'Tracks made to your brief and references.'],
   ['spotify-promotion', 'Spotify promotion', 'A campaign to put a release in front of listeners.'],
   ['mix-mastering', 'Mix and mastering', 'Your stems, club-ready.'],
   ['training', 'Training', 'Production and DJ skills, one to one or in a group.'],

@@ -8,7 +8,7 @@ import { HalfWorld } from '../components/ui.jsx';
 const SERVICES = [
   ['events', 'Events'],
   ['photoshoot', 'Photoshoot'],
-  ['ghost-production', 'Ghost production'],
+  ['ghost-production', 'Production'],
   ['spotify-promotion', 'Spotify promotion'],
   ['mix-mastering', 'Mix and mastering'],
   ['training', 'Training'],
