@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabaseClient.js';
 import { HalfWorld } from '../components/ui.jsx';
+import OpsLeads from './OpsLeads.jsx';
+import OpsArtists from './OpsArtists.jsx';
 
 // Internal operations page (#ops). Not in the nav. Everything it reads is
 // locked by RLS to confirmed accounts on the team_members list — see
@@ -506,6 +508,7 @@ export default function Ops() {
   const { loading, session } = useSession();
   const [member, setMember] = useState(null);
   const [openId, setOpenId] = useState(null);
+  const [tab, setTab] = useState('bookings');
   // A password-reset link lands on /?to=ops&reset=1&code=… — remember the
   // flag, then tidy the URL back to /#ops.
   const [resetting, setResetting] = useState(() => new URLSearchParams(window.location.search).get('reset') === '1');
@@ -550,11 +553,15 @@ export default function Ops() {
     <>
       <div className="ops-bar-top">
         <div className="wrap ops-bar-top-inner">
-          <span className="label label-xs muted">Internal · {email}</span>
+          <span className="tags" style={{ margin: 0 }}>
+            {[['bookings', 'Bookings'], ['artists', 'Artists'], ['leads', 'Leads']].map(([k, l]) => (
+              <button key={k} type="button" className="tag" aria-pressed={tab === k} onClick={() => { setTab(k); setOpenId(null); }}>{l}</button>
+            ))}
+          </span>
           <button type="button" className="btn btn-ghost label-xs" onClick={signOut}>Sign out</button>
         </div>
       </div>
-      {openId
+      {tab === 'leads' ? <OpsLeads email={email} /> : tab === 'artists' ? <OpsArtists email={email} /> : openId
         ? <BookingDetail key={openId} id={openId} email={email} onBack={() => { setOpenId(null); window.scrollTo({ top: 0 }); }} />
         : <BookingsList email={email} onOpen={(bid) => { setOpenId(bid); window.scrollTo({ top: 0 }); }} />}
     </>
