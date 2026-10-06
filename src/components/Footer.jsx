@@ -3,7 +3,7 @@ import { CONTACT_EMAIL } from '../lib/routes.js';
 
 const COLUMNS = [
   ['events', 'Events', [['events', 'Upcoming nights'], ['services', 'Production'], ['packages', 'Packages'], ['quote', 'Get a quote']]],
-  ['academy', 'Academy', [['academy', 'Courses'], ['artists', 'Artists'], ['join', 'Join OTW']]],
+  ['academy', 'Academy', [['academy', 'Courses'], ['artists', 'Artists'], ['join', 'Join OTW'], ['artist-services', 'Work with us']]],
   ['records', 'Records', [['records', 'Releases'], ['records', 'Submit a demo']]],
 ];
 

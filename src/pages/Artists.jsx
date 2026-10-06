@@ -22,7 +22,10 @@ export default function Artists({ djs, initialSelected, onDone, go, goToQuote })
         <div className="wrap band-inner">
           <h2>Play with us</h2>
           <p>More than a roster. If you play and want in, we'd like to hear what you do.</p>
-          <button className="btn" onClick={() => go('join')}>Join OTW →</button>
+          <div className="actions" style={{ marginTop: 0 }}>
+            <button className="btn" onClick={() => go('join')}>Join OTW →</button>
+            <button className="btn" onClick={() => go('artist-services')}>Work with us →</button>
+          </div>
         </div>
       </section>
     </>

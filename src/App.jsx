@@ -14,6 +14,8 @@ import Join from './pages/Join.jsx';
 import Records from './pages/Records.jsx';
 import About from './pages/About.jsx';
 import Ops from './pages/Ops.jsx';
+import ArtistServices from './pages/ArtistServices.jsx';
+import ClientPage from './pages/ClientPage.jsx';
 
 function useOtwData() {
   const [state, setState] = useState({ status: 'loading' });
@@ -77,9 +79,11 @@ export default function App() {
   const [quotePrefill, setQuotePrefill] = useState(null);
   const data = useOtwData();
   const entity = ENTITY_OF[route] || 'main';
+  const standalone = route === 'ops' || route === 'client';
 
   useEffect(() => {
-    window.location.hash = route;
+    // The client link keeps its token in the hash, so leave it alone.
+    if (route !== 'client') window.location.hash = route;
   }, [route]);
 
   useEffect(() => {
@@ -105,10 +109,11 @@ export default function App() {
 
       <main data-entity={entity}>
         {route === 'ops' && <Ops />}
+        {route === 'client' && <ClientPage />}
 
-        {route !== 'ops' && data.status === 'loading' && <div className="wrap status-page label">Loading</div>}
+        {!standalone && data.status === 'loading' && <div className="wrap status-page label">Loading</div>}
 
-        {route !== 'ops' && data.status === 'error' && (
+        {!standalone && data.status === 'error' && (
           <div className="wrap status-page">
             <p className="body">
               We couldn't load the site right now. Try again shortly. Site owner: check the Supabase
@@ -117,7 +122,7 @@ export default function App() {
           </div>
         )}
 
-        {route !== 'ops' && data.status === 'ready' && (
+        {!standalone && data.status === 'ready' && (
           <>
             {route === 'home' && <Home data={data} go={go} goToQuote={goToQuote} />}
             {route === 'events' && (
@@ -133,13 +138,14 @@ export default function App() {
               <Artists djs={data.djs} initialSelected={selectedArtist} onDone={() => setSelectedArtist(null)} go={go} goToQuote={goToQuote} />
             )}
             {route === 'join' && <Join />}
+            {route === 'artist-services' && <ArtistServices go={go} />}
             {route === 'records' && <Records releases={data.releases} />}
             {route === 'about' && <About go={go} />}
           </>
         )}
       </main>
 
-      {route !== 'quote' && route !== 'ops' && (
+      {route !== 'quote' && !standalone && (
         <button className="sticky-cta btn btn-primary" data-entity="events" onClick={() => goToQuote()}>
           Get a quote →
         </button>

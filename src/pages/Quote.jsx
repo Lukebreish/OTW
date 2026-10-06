@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient.js';
 import { recommendPackageId } from '../lib/recommend.js';
 import { HalfWorld } from '../components/ui.jsx';
+import Honeypot from '../components/Honeypot.jsx';
 
 export const EVENT_TYPES = ['Birthday', 'Wedding', 'Corporate event', 'Private party', 'Brand event', 'Club / nightlife', 'Festival', 'Other'];
 const SIZES = [['lt30', 'Up to 30'], ['30-100', '30–100'], ['100-300', '100–300'], ['300+', '300+']];
@@ -24,6 +25,7 @@ function Choice({ active, onClick, children }) {
 
 export default function Quote({ categories, prefill }) {
   const [step, setStep] = useState(prefill?.eventType ? 1 : 0);
+  const [djOnly, setDjOnly] = useState(false);
   const [eventType, setEventType] = useState(prefill?.eventType || '');
   const [eventSize, setEventSize] = useState('');
   const [duration, setDuration] = useState('');
@@ -31,6 +33,14 @@ export default function Quote({ categories, prefill }) {
   const [servicesWanted, setServicesWanted] = useState(prefill?.services || []);
   const [contact, setContact] = useState({ name: '', email: '', phone: '', location: '', eventDate: '', notes: '' });
   const [submitState, setSubmitState] = useState('idle');
+  const [trap, setTrap] = useState('');
+
+  const chooseDjOnly = (value) => {
+    setDjOnly(value);
+    setServicesWanted(value ? ['djs'] : prefill?.services || []);
+  };
+  const next = () => setStep((s) => (s === 2 && djOnly ? 4 : s + 1));
+  const back = () => setStep((s) => (s === 4 && djOnly ? 2 : Math.max(0, s - 1)));
 
   const toggleService = (slug) => {
     setServicesWanted((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
@@ -43,7 +53,8 @@ export default function Quote({ categories, prefill }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!contact.name || !contact.email) return;
+    if (trap) { setSubmitState('sent'); return; }
+    if (!contact.name || !contact.email || !contact.phone.trim()) return;
     setSubmitState('sending');
     const { error } = await supabase.from('quote_requests').insert({
       name: contact.name,
@@ -54,6 +65,7 @@ export default function Quote({ categories, prefill }) {
       event_duration: duration,
       setting,
       services_wanted: servicesWanted,
+      request_type: djOnly ? 'dj_only' : 'event',
       location: contact.location || null,
       event_date: contact.eventDate || null,
       additional_info: contact.notes || null,
@@ -93,6 +105,12 @@ export default function Quote({ categories, prefill }) {
         {step === 0 && (
           <>
             {stepLabel('What’s the event?')}
+            <p className="label label-xs muted" style={{ marginBottom: 'var(--space-3)' }}>What are you after?</p>
+            <div className="tags" style={{ marginBottom: 'var(--space-6)' }}>
+              <Choice active={!djOnly} onClick={() => chooseDjOnly(false)}>An event</Choice>
+              <Choice active={djOnly} onClick={() => chooseDjOnly(true)}>Booking a DJ only</Choice>
+            </div>
+            <p className="label label-xs muted" style={{ marginBottom: 'var(--space-3)' }}>The event</p>
             <div className="tags">
               {EVENT_TYPES.map((t) => <Choice key={t} active={eventType === t} onClick={() => setEventType(t)}>{t}</Choice>)}
             </div>
@@ -136,11 +154,13 @@ export default function Quote({ categories, prefill }) {
 
         {step === 4 && (
           <>
-            <div className="field-block">
-              <div className="label label-xs">Based on what you've told us</div>
-              <h2 style={{ marginTop: 'var(--space-4)' }}>{PACKAGE_LABELS[recommendedId]}</h2>
-              <p style={{ marginTop: 'var(--space-4)' }}>A starting point. Our team reviews every request and adjusts it before your quote goes out.</p>
-            </div>
+            {!djOnly && (
+              <div className="field-block">
+                <div className="label label-xs">Based on what you've told us</div>
+                <h2 style={{ marginTop: 'var(--space-4)' }}>{PACKAGE_LABELS[recommendedId]}</h2>
+                <p style={{ marginTop: 'var(--space-4)' }}>A starting point. Our team reviews every request and adjusts it before your quote goes out.</p>
+              </div>
+            )}
 
             <form style={{ marginTop: 'var(--space-7)' }} onSubmit={handleSubmit}>
               {stepLabel('Your details')}
@@ -156,8 +176,8 @@ export default function Quote({ categories, prefill }) {
               </div>
               <div className="field-row">
                 <div className="field">
-                  <label className="label label-xs" htmlFor="q-phone">Phone (optional)</label>
-                  <input id="q-phone" value={contact.phone} onChange={setField('phone')} />
+                  <label className="label label-xs" htmlFor="q-phone">Phone</label>
+                  <input id="q-phone" type="tel" required value={contact.phone} onChange={setField('phone')} />
                 </div>
                 <div className="field">
                   <label className="label label-xs" htmlFor="q-date">Event date (optional)</label>
@@ -172,6 +192,7 @@ export default function Quote({ categories, prefill }) {
                 <label className="label label-xs" htmlFor="q-notes">Anything else we should know? (optional)</label>
                 <textarea id="q-notes" value={contact.notes} onChange={setField('notes')} />
               </div>
+              <Honeypot value={trap} onChange={setTrap} />
               <button className="btn btn-primary" type="submit" disabled={submitState === 'sending'}>
                 {submitState === 'sending' ? 'Sending' : 'Send request'}
               </button>
@@ -181,11 +202,11 @@ export default function Quote({ categories, prefill }) {
         )}
 
         <div className="quote-nav">
-          <button type="button" className="btn btn-ghost" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}>
+          <button type="button" className="btn btn-ghost" onClick={back} disabled={step === 0}>
             ← Back
           </button>
           {step < totalSteps - 1 && (
-            <button type="button" className="btn btn-primary" onClick={() => setStep((s) => s + 1)} disabled={!canAdvance}>
+            <button type="button" className="btn btn-primary" onClick={next} disabled={!canAdvance}>
               Continue →
             </button>
           )}

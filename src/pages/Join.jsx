@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { supabase } from '../lib/supabaseClient.js';
 import { HalfWorld } from '../components/ui.jsx';
+import Honeypot from '../components/Honeypot.jsx';
 
 const AVAILABILITY = ['Weekends only', 'Weekdays too', 'Flexible', 'Limited, ask me'];
 const ROLES = ['DJ', 'DJ/Producer', 'Singer'];
+const MAX_PHOTO = 5 * 1024 * 1024;
+const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export default function Join() {
   const [form, setForm] = useState({
@@ -12,13 +15,33 @@ export default function Join() {
     availability: '', rate: '', notes: '',
   });
   const [status, setStatus] = useState('idle');
+  const [trap, setTrap] = useState('');
+  const [photo, setPhoto] = useState(null);
+  const [photoError, setPhotoError] = useState('');
+  const preview = useMemo(() => (photo ? URL.createObjectURL(photo) : ''), [photo]);
+
+  const pickPhoto = (e) => {
+    const file = e.target.files?.[0];
+    setPhotoError('');
+    if (!file) { setPhoto(null); return; }
+    if (!PHOTO_TYPES.includes(file.type)) { setPhotoError('Use a JPG, PNG or WebP image.'); setPhoto(null); return; }
+    if (file.size > MAX_PHOTO) { setPhotoError('That photo is over 5 MB. Pick a smaller one.'); setPhoto(null); return; }
+    setPhoto(file);
+  };
 
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (trap) { setStatus('sent'); return; }
     if (!form.name || !form.email || !form.djName) return;
+    if (!photo) { setPhotoError('Add a photo of you.'); return; }
     setStatus('sending');
+    const ext = photo.type === 'image/png' ? 'png' : photo.type === 'image/webp' ? 'webp' : 'jpg';
+    const path = `applications/${crypto.randomUUID()}.${ext}`;
+    const { error: uploadError } = await supabase.storage.from('artist-photos').upload(path, photo, { contentType: photo.type });
+    if (uploadError) { setStatus('error'); return; }
+    const photoUrl = supabase.storage.from('artist-photos').getPublicUrl(path).data.publicUrl;
     const { error } = await supabase.from('dj_applications').insert({
       name: form.name,
       email: form.email,
@@ -36,6 +59,7 @@ export default function Join() {
       availability: form.availability || null,
       rate: form.rate || null,
       notes: form.notes || null,
+      photo_url: photoUrl,
       status: 'pending',
     });
     setStatus(error ? 'error' : 'sent');
@@ -89,6 +113,13 @@ export default function Join() {
                 {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
               </select>
             </div>
+          </div>
+
+          <div className="field">
+            <label className="label label-xs" htmlFor="j-photo">Your photo (JPG, PNG or WebP, up to 5 MB)</label>
+            <input id="j-photo" type="file" accept="image/jpeg,image/png,image/webp" required onChange={pickPhoto} />
+            {preview && <img src={preview} alt="Your photo preview" style={{ marginTop: 'var(--space-3)', width: 160, height: 160, objectFit: 'cover' }} />}
+            {photoError && <p className="form-status error">{photoError}</p>}
           </div>
 
           <div className="field-row">
@@ -158,6 +189,7 @@ export default function Join() {
             <textarea id="j-notes" value={form.notes} onChange={set('notes')} />
           </div>
 
+          <Honeypot value={trap} onChange={setTrap} />
           <button className="btn btn-primary" type="submit" disabled={status === 'sending'}>
             {status === 'sending' ? 'Sending' : 'Send application'}
           </button>

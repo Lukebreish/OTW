@@ -3,6 +3,8 @@ import { supabase } from '../lib/supabaseClient.js';
 import { HalfWorld } from '../components/ui.jsx';
 import OpsLeads from './OpsLeads.jsx';
 import OpsArtists from './OpsArtists.jsx';
+import OpsProfiles from './OpsProfiles.jsx';
+import { openInvoice } from '../lib/invoice.js';
 
 // Internal operations page (#ops). Not in the nav. Everything it reads is
 // locked by RLS to confirmed accounts on the team_members list — see
@@ -182,19 +184,63 @@ function SetPassword({ onDone }) {
   );
 }
 
+// ---------- New booking ----------
+
+function NewBooking({ email, onCreated, onCancel }) {
+  const [f, setF] = useState({ booking_type: 'event', event_name: '', client_name: '', client_phone: '', client_email: '', event_date: '', address: '', location: '' });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    const row = { ...f, owner: email, event_name: f.event_name || (f.booking_type === 'dj_only' ? 'DJ booking' : 'New booking') };
+    Object.keys(row).forEach((k) => { if (typeof row[k] === 'string' && row[k].trim() === '') row[k] = null; });
+    const { data, error: err } = await supabase.from('bookings').insert(row).select('id').single();
+    setSaving(false);
+    if (err) setError(err.message);
+    else onCreated(data.id);
+  };
+
+  return (
+    <form onSubmit={submit} className="ops-block" style={{ marginTop: 'var(--space-7)' }}>
+      <div className="tags">
+        {[['event', 'Event'], ['dj_only', 'DJ only']].map(([k, l]) => (
+          <button key={k} type="button" className="tag tag-lg" aria-pressed={f.booking_type === k} onClick={() => setF({ ...f, booking_type: k })}>{l}</button>
+        ))}
+      </div>
+      <div className="ops-fields" style={{ marginTop: 'var(--space-6)' }}>
+        <div className="field"><label className="label label-xs" htmlFor="n-name">Event name</label><input id="n-name" value={f.event_name} onChange={set('event_name')} /></div>
+        <div className="field"><label className="label label-xs" htmlFor="n-client">Client / organiser</label><input id="n-client" required value={f.client_name} onChange={set('client_name')} /></div>
+        <div className="field"><label className="label label-xs" htmlFor="n-phone">Client phone (required)</label><input id="n-phone" type="tel" required value={f.client_phone} onChange={set('client_phone')} /></div>
+        <div className="field"><label className="label label-xs" htmlFor="n-email">Client email</label><input id="n-email" type="email" value={f.client_email} onChange={set('client_email')} /></div>
+        <div className="field"><label className="label label-xs" htmlFor="n-date">Date</label><input id="n-date" type="date" value={f.event_date} onChange={set('event_date')} /></div>
+        <div className="field"><label className="label label-xs" htmlFor="n-city">City / area</label><input id="n-city" value={f.location} onChange={set('location')} /></div>
+      </div>
+      <div className="field"><label className="label label-xs" htmlFor="n-address">Event address</label><input id="n-address" placeholder="Street, number, postcode, city" value={f.address} onChange={set('address')} /></div>
+      <div className="actions">
+        <button className="btn btn-primary" type="submit" disabled={saving}>{saving ? 'Creating' : 'Create booking'}</button>
+        <button className="btn btn-ghost" type="button" onClick={onCancel}>Cancel</button>
+      </div>
+      {error && <p className="form-status error">{error}</p>}
+    </form>
+  );
+}
+
 // ---------- Bookings list ----------
 
 function BookingsList({ onOpen, email }) {
   const [rows, setRows] = useState(null);
   const [error, setError] = useState('');
   const [filter, setFilter] = useState('active');
-  const [creating, setCreating] = useState(false);
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     (async () => {
       const { data, error: err } = await supabase
         .from('bookings')
-        .select('id, event_name, client_name, location, event_date, status, owner, payment_status, created_at, booking_checklist(done)')
+        .select('id, event_name, client_name, location, address, booking_type, event_date, status, owner, payment_status, created_at, booking_checklist(done)')
         .order('event_date', { ascending: true, nullsFirst: false })
         .order('created_at', { ascending: false });
       if (err) setError(err.message);
@@ -217,18 +263,6 @@ function BookingsList({ onOpen, email }) {
     return r.status === filter;
   });
 
-  const create = async () => {
-    setCreating(true);
-    const { data, error: err } = await supabase
-      .from('bookings')
-      .insert({ event_name: 'New booking', owner: email })
-      .select('id')
-      .single();
-    setCreating(false);
-    if (err) setError(err.message);
-    else onOpen(data.id);
-  };
-
   const filters = [['active', 'Active'], ...STATUSES, ['all', 'All']];
 
   return (
@@ -240,10 +274,10 @@ function BookingsList({ onOpen, email }) {
             <h1>Bookings</h1>
             <p className="lead">Every quote request lands here as a prospect. Open one to run its checklist.</p>
           </div>
-          <button className="btn btn-primary" type="button" onClick={create} disabled={creating}>
-            {creating ? 'Creating' : 'New booking'}
-          </button>
+          {!adding && <button className="btn btn-primary" type="button" onClick={() => setAdding(true)}>New booking</button>}
         </div>
+
+        {adding && <NewBooking email={email} onCreated={onOpen} onCancel={() => setAdding(false)} />}
 
         <div className="tags">
           {filters.map(([key, label]) => (
@@ -266,7 +300,7 @@ function BookingsList({ onOpen, email }) {
                   <span className="label ops-row-date">{formatDate(r.event_date)}</span>
                   <span className="ops-row-main">
                     <span className="label ops-row-name">{r.event_name || 'Untitled booking'}</span>
-                    <span className="muted">{[r.client_name, r.location, r.owner && `Owner: ${r.owner}`].filter(Boolean).join(' · ') || '—'}</span>
+                    <span className="muted">{[r.booking_type === 'dj_only' && 'DJ only', r.client_name, r.address || r.location, r.owner && `Owner: ${r.owner}`].filter(Boolean).join(' · ') || '—'}</span>
                   </span>
                   <span className={`tag ${r.status === 'confirmed' || r.status === 'in_preparation' ? 'tag-fill' : ''}`}>{STATUS_LABEL[r.status]}</span>
                   <span className="ops-progress">
@@ -290,14 +324,29 @@ const FIELDS = [
   ['event_type', 'Event type', 'text'],
   ['event_date', 'Date', 'date'],
   ['opening_hours', 'Opening hours', 'text'],
-  ['location', 'Location', 'text'],
+  ['location', 'City / area', 'text'],
+  ['address', 'Event address', 'text'],
   ['expected_guests', 'Expected guests', 'text'],
   ['client_name', 'Client / organiser', 'text'],
   ['client_email', 'Client email', 'email'],
-  ['client_phone', 'Client phone', 'text'],
+  ['client_phone', 'Client phone (required)', 'tel'],
   ['owner', 'OTW owner', 'text'],
   ['agreed_price', 'Agreed price (EUR)', 'number'],
+  ['material_cost', 'Material cost, what we pay (EUR)', 'number'],
 ];
+
+const INVOICE_FIELDS = [
+  ['invoice_company', 'Company / legal name', 'text'],
+  ['invoice_vat', 'VAT number', 'text'],
+  ['invoice_address', 'Billing address', 'text'],
+  ['invoice_email', 'Billing email', 'email'],
+  ['invoice_number', 'Invoice number', 'text'],
+  ['invoice_amount', 'Invoice amount (EUR)', 'number'],
+  ['invoice_due', 'Due date', 'date'],
+];
+const INVOICE_STATUSES = [['none', 'Not invoiced'], ['draft', 'Draft'], ['sent', 'Sent'], ['paid', 'Paid']];
+const NUMERIC_KEYS = ['agreed_price', 'material_cost', 'invoice_amount'];
+const ALL_KEYS = FIELDS.concat(INVOICE_FIELDS, [['status'], ['payment_status'], ['invoice_status'], ['notes']]);
 
 function CheckIcon() {
   return (
@@ -312,6 +361,7 @@ function BookingDetail({ id, email, onBack }) {
   const [phase, setPhase] = useState(null);
   const [saveState, setSaveState] = useState('idle');
   const [error, setError] = useState('');
+  const [note, setNote] = useState('');
 
   const load = useCallback(async () => {
     const [b, c] = await Promise.all([
@@ -331,18 +381,20 @@ function BookingDetail({ id, email, onBack }) {
 
   useEffect(() => { load(); }, [load]);
 
-  const dirty = booking && draft && FIELDS.concat([['status'], ['payment_status'], ['notes']])
+  const dirty = booking && draft && ALL_KEYS
     .some(([key]) => String(booking[key] ?? '') !== String(draft[key] ?? ''));
 
   const set = (key) => (e) => setDraft({ ...draft, [key]: e.target.value });
 
   const save = async () => {
+    if (!String(draft.client_phone || '').trim()) { setError('Client phone is required.'); return; }
     setSaveState('saving');
+    setError('');
     const patch = {};
-    FIELDS.concat([['status'], ['payment_status'], ['notes']]).forEach(([key]) => {
+    ALL_KEYS.forEach(([key]) => {
       let v = draft[key];
       if (v === '') v = null;
-      if (key === 'agreed_price' && v !== null) v = Number(v);
+      if (NUMERIC_KEYS.includes(key) && v !== null) v = Number(v);
       patch[key] = v;
     });
     const { data, error: err } = await supabase.from('bookings').update(patch).eq('id', id).select('*').single();
@@ -351,6 +403,18 @@ function BookingDetail({ id, email, onBack }) {
     setDraft(data);
     setSaveState('saved');
     setTimeout(() => setSaveState('idle'), 1500);
+  };
+
+  const copyClientLink = async () => {
+    const link = `${window.location.origin}/#client/${booking.client_token}`;
+    try { await navigator.clipboard.writeText(link); setNote('Client link copied.'); }
+    catch { setNote(link); }
+    setTimeout(() => setNote(''), 4000);
+  };
+
+  const invoice = () => {
+    const msg = openInvoice({ ...booking, ...draft });
+    if (msg) setError(msg);
   };
 
   const toggle = async (item) => {
@@ -395,7 +459,7 @@ function BookingDetail({ id, email, onBack }) {
             </div>
             <h1>{booking.event_name || 'Untitled booking'}</h1>
             <p className="lead" style={{ marginTop: 'var(--space-4)' }}>
-              {[booking.client_name, booking.location, booking.expected_guests && `${booking.expected_guests} guests`].filter(Boolean).join(' · ') || 'Fill in the details below.'}
+              {[booking.booking_type === 'dj_only' && 'DJ only', booking.client_name, booking.address || booking.location, booking.expected_guests && `${booking.expected_guests} guests`, booking.agreed_price != null && booking.material_cost != null && `Margin €${(Number(booking.agreed_price) - Number(booking.material_cost)).toLocaleString('en-GB')}`].filter(Boolean).join(' · ') || 'Fill in the details below.'}
             </p>
           </div>
           <div className="ops-progress ops-progress-lg">
@@ -409,6 +473,9 @@ function BookingDetail({ id, email, onBack }) {
           <div className="ops-block-head">
             <h2>Details</h2>
             <div className="actions" style={{ marginTop: 0 }}>
+              {note && <span className="label label-xs muted">{note}</span>}
+              <button type="button" className="btn btn-secondary btn-sm" onClick={copyClientLink}>Copy client link</button>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={invoice}>Invoice PDF</button>
               {saveState === 'saved' && <span className="label label-xs muted">Saved</span>}
               <button type="button" className="btn btn-primary btn-sm" onClick={save} disabled={!dirty || saveState === 'saving'}>
                 {saveState === 'saving' ? 'Saving' : 'Save changes'}
@@ -435,7 +502,7 @@ function BookingDetail({ id, email, onBack }) {
             {FIELDS.map(([key, label, type]) => (
               <div className="field" key={key}>
                 <label className="label label-xs" htmlFor={`b-${key}`}>{label}</label>
-                <input id={`b-${key}`} type={type} step={type === 'number' ? '0.01' : undefined} value={draft[key] ?? ''} onChange={set(key)} />
+                <input id={`b-${key}`} type={type} step={type === 'number' ? '0.01' : undefined} required={key === 'client_phone'} value={draft[key] ?? ''} onChange={set(key)} />
               </div>
             ))}
           </div>
@@ -449,6 +516,27 @@ function BookingDetail({ id, email, onBack }) {
             </div>
           )}
 
+          <div className="ops-block-head" style={{ marginTop: 'var(--space-7)' }}><h2>Invoicing</h2></div>
+          <div className="field-row">
+            <div className="field">
+              <label className="label label-xs" htmlFor="b-invoice-status">Invoice status</label>
+              <select id="b-invoice-status" value={draft.invoice_status} onChange={set('invoice_status')}>
+                {INVOICE_STATUSES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="ops-fields">
+            {INVOICE_FIELDS.map(([key, label, type]) => (
+              <div className="field" key={key}>
+                <label className="label label-xs" htmlFor={`b-${key}`}>{label}</label>
+                <input id={`b-${key}`} type={type} step={type === 'number' ? '0.01' : undefined} value={draft[key] ?? ''} onChange={set(key)} />
+              </div>
+            ))}
+          </div>
+
+          {booking.client_notes && (
+            <div className="field"><span className="label label-xs">Notes from the client</span><p style={{ marginTop: 'var(--space-2)' }}>{booking.client_notes}</p></div>
+          )}
           <div className="field">
             <label className="label label-xs" htmlFor="b-notes">Notes, open points, decisions to make</label>
             <textarea id="b-notes" value={draft.notes ?? ''} onChange={set('notes')} />
@@ -554,14 +642,14 @@ export default function Ops() {
       <div className="ops-bar-top">
         <div className="wrap ops-bar-top-inner">
           <span className="tags" style={{ margin: 0 }}>
-            {[['bookings', 'Bookings'], ['artists', 'Artists'], ['leads', 'Leads']].map(([k, l]) => (
+            {[['bookings', 'Bookings'], ['artists', 'Artists'], ['profiles', 'Profiles'], ['leads', 'Leads']].map(([k, l]) => (
               <button key={k} type="button" className="tag" aria-pressed={tab === k} onClick={() => { setTab(k); setOpenId(null); }}>{l}</button>
             ))}
           </span>
           <button type="button" className="btn btn-ghost label-xs" onClick={signOut}>Sign out</button>
         </div>
       </div>
-      {tab === 'leads' ? <OpsLeads email={email} /> : tab === 'artists' ? <OpsArtists email={email} /> : openId
+      {tab === 'leads' ? <OpsLeads email={email} /> : tab === 'artists' ? <OpsArtists email={email} /> : tab === 'profiles' ? <OpsProfiles /> : openId
         ? <BookingDetail key={openId} id={openId} email={email} onBack={() => { setOpenId(null); window.scrollTo({ top: 0 }); }} />
         : <BookingsList email={email} onOpen={(bid) => { setOpenId(bid); window.scrollTo({ top: 0 }); }} />}
     </>

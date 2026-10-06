@@ -473,3 +473,6 @@ button.tag[aria-pressed="true"] { background: var(--accent); border-color: var(-
 .check-row[aria-checked="true"] .check-label { color: var(--text-secondary); text-decoration: line-through; }
 .check-meta { margin-left: auto; font-size: var(--text-xs); color: var(--text-secondary); white-space: nowrap; }
 @media (max-width: 640px) { .check-meta { display: none; } }
+
+/* Honeypot: off-screen, not display:none (some bots skip hidden fields). */
+.hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Honeypot from '../components/Honeypot.jsx';
 import { supabase } from '../lib/supabaseClient.js';
 import { HalfWorld } from '../components/ui.jsx';
 
@@ -35,10 +36,12 @@ function ReleaseCard({ release }) {
 function DemoForm() {
   const [form, setForm] = useState({ artistName: '', email: '', link: '', genre: '', message: '' });
   const [status, setStatus] = useState('idle');
+  const [trap, setTrap] = useState('');
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
   const submit = async (e) => {
     e.preventDefault();
+    if (trap) { setStatus('sent'); return; }
     if (!form.artistName || !form.email || !form.link) return;
     setStatus('sending');
     const { error } = await supabase.from('demo_submissions').insert({
@@ -87,6 +90,7 @@ function DemoForm() {
         <label className="label label-xs" htmlFor="d-msg">About the track (optional)</label>
         <textarea id="d-msg" value={form.message} onChange={set('message')} />
       </div>
+      <Honeypot value={trap} onChange={setTrap} />
       <button className="btn btn-primary" type="submit" disabled={status === 'sending'}>{status === 'sending' ? 'Sending' : 'Send demo'}</button>
       {status === 'error' && <p className="form-status error">That didn't send. Try again in a moment.</p>}
     </form>
