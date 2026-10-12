@@ -24,3 +24,10 @@ is in `team_members` — never add public policies to them. Every
 checklist (database triggers). Change the checklist by editing
 `checklist_template`, not the code; changes apply to new bookings only.
 Auth uses the PKCE flow so email links (`/?to=ops`) don't clash with hash routing.
+
+## Private DJ link (#add-dj/<token>)
+`src/pages/AddDj.jsx`, migration 012. Publishes to `djs` immediately via the
+`add_dj_via_invite` RPC (no review). Only name, photo, role, years and genres
+go in `djs` (publicly readable). Email, phone and location go in `dj_contacts`
+— team-only RLS; never move them into `djs`. Links live in `dj_invite_links`;
+set `active = false` to kill one.

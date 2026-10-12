@@ -13,6 +13,7 @@ export const ENTITY_OF = {
   join: 'academy',
   'artist-services': 'academy',
   client: 'main', // personal client link, not in NAV
+  'add-dj': 'academy', // private DJ link, not in NAV
   records: 'records',
   ops: 'main', // internal, not in NAV
 };
@@ -32,6 +33,7 @@ export const CONTACT_EMAIL = 'hello@offtheworld.events';
 export function resolveRoute(hash) {
   const key = (hash || '').replace('#', '') || 'home';
   if (key.startsWith('client/')) return 'client';
+  if (key.startsWith('add-dj/')) return 'add-dj';
   const resolved = ALIASES[key] || key;
   return ENTITY_OF[resolved] ? resolved : 'home';
 }

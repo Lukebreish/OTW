@@ -16,6 +16,7 @@ import About from './pages/About.jsx';
 import Ops from './pages/Ops.jsx';
 import ArtistServices from './pages/ArtistServices.jsx';
 import ClientPage from './pages/ClientPage.jsx';
+import AddDj from './pages/AddDj.jsx';
 
 function useOtwData() {
   const [state, setState] = useState({ status: 'loading' });
@@ -79,11 +80,11 @@ export default function App() {
   const [quotePrefill, setQuotePrefill] = useState(null);
   const data = useOtwData();
   const entity = ENTITY_OF[route] || 'main';
-  const standalone = route === 'ops' || route === 'client';
+  const standalone = route === 'ops' || route === 'client' || route === 'add-dj';
 
   useEffect(() => {
-    // The client link keeps its token in the hash, so leave it alone.
-    if (route !== 'client') window.location.hash = route;
+    // Private links keep their token in the hash, so leave them alone.
+    if (route !== 'client' && route !== 'add-dj') window.location.hash = route;
   }, [route]);
 
   useEffect(() => {
@@ -110,6 +111,7 @@ export default function App() {
       <main data-entity={entity}>
         {route === 'ops' && <Ops />}
         {route === 'client' && <ClientPage />}
+        {route === 'add-dj' && <AddDj />}
 
         {!standalone && data.status === 'loading' && <div className="wrap status-page label">Loading</div>}
 
