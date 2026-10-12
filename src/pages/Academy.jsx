@@ -50,7 +50,7 @@ export default function Academy({ courses, sessions, djs, go, goToQuote }) {
         <div className="wrap hero-inner">
           <div className="eyebrow label"><HalfWorld size={16} />OTW Academy · Brussels</div>
           <h1>Learn to DJ. Learn to produce.</h1>
-          <p className="lead">Courses taught by the crew that plays out every weekend. Small groups, club gear, and a path onto the OTW roster.</p>
+          <p className="lead">Courses taught by the crew that plays out every weekend. Small groups, club gear, and OTW certification: your path onto the roster.</p>
           <div className="actions">
             <button className="btn btn-primary" onClick={() => scrollTo('courses')}>See courses</button>
             <button className="btn btn-secondary" onClick={() => scrollTo('artists')}>Meet the artists</button>
