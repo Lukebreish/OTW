@@ -9,9 +9,11 @@ import Honeypot from '../components/Honeypot.jsx';
 
 const ROLES = ['DJ', 'DJ/Producer', 'Singer'];
 const GENRES = [
-  'Afro House', 'Afro Tech', 'Amapiano', 'Melodic House', 'Organic House', 'Deep House', 'House',
-  'Tech House', 'Melodic Techno', 'Techno', 'Disco / Nu-Disco', 'Arabic / Oriental', 'Latin',
-  'Hip Hop / R&B', 'Commercial / Open Format', 'Drum & Bass',
+  'Afro House', 'Afro Tech', 'Afro Latin', 'Amapiano', 'Arabic / Oriental', 'Bass House', 'Big Room',
+  'Commercial / Open Format', 'Dancehall / Reggaeton', 'Deep House', 'Disco / Nu-Disco', 'Downtempo',
+  'Drum & Bass', 'Dubstep', 'EDM', 'Electro', 'Funk / Soul', 'Hard Techno', 'Hip Hop', 'House',
+  'Indie Dance', 'Latin House', 'Melodic House', 'Melodic Techno', 'Minimal / Deep Tech', 'Organic House',
+  'Progressive House', 'R&B', 'Tech House', 'Techno', 'Trance', 'UK Garage',
 ];
 const MAX_GENRES = 5;
 const MAX_PHOTO = 5 * 1024 * 1024;
