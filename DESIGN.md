@@ -39,7 +39,7 @@ Events accent.
   (served via the SVGs).
 - Buttons: primary (accent fill, ink label, inverts on hover), secondary (2px
   border), ghost (text + →). 48px / 40px. Disabled 45%.
-- Photography grayscale. Release artwork is the only colour image.
+- Photography grayscale at rest, colour on hover/focus. Release artwork is the only always-colour image.
 - Motion: 120–200ms colour transitions; hero half-world rises on load (400ms,
   off under `prefers-reduced-motion`).
 - Copy: short, "we"/"you", no exclamation marks, middle dot ` · ` between
@@ -84,3 +84,4 @@ Not built yet: course and release detail pages, Tracklist.
 | 2026-09-26 | OTW CERTIFIED tag driven by `djs.certified` | Certification must be a real, per-artist decision |
 | 2026-09-30 | Internal ops page at `#ops` (not in nav): Supabase Auth logins, bookings list, per-booking checklist grouped Sell it / Run it / Learn from it | Turns the event management SOP into something tracked per booking; same DS components (ruled rows, tags, 2px square checkboxes, accent progress bars) |
 | 2026-10-12 | Private DJ link `#add-dj/<token>` publishes straight to Artists (migration 012). Genre multi-select dropdown (`.multi`) built from check-rows | Roster growth without review; contact details stay team-only in `dj_contacts` |
+| 2026-10-12 | Photos stay grayscale but turn colour on hover/focus; the selected artist stays in colour | DJs asked to be seen in colour; keeps the mono look at rest |

@@ -496,3 +496,8 @@ button.tag[aria-pressed="true"] { background: var(--accent); border-color: var(-
 .multi-option:last-child { border-bottom: 0; }
 .multi-option:disabled { cursor: not-allowed; opacity: 0.4; }
 .multi-option[aria-checked="true"] .check-label { color: var(--text-primary); text-decoration: none; }
+
+/* ---------- Photos: grayscale, colour on hover/focus (selected artist stays in colour) ---------- */
+.artist-photo img, .profile-photo img, .event-card .event-photo img { transition: filter var(--duration-base, 240ms) var(--ease-out); }
+.artist-card:hover .artist-photo img, .artist-card:focus-visible .artist-photo img, .artist-card[aria-pressed="true"] .artist-photo img,
+.profile-photo:hover img, .event-card:hover .event-photo img, .event-card:focus-within .event-photo img { filter: none; }
