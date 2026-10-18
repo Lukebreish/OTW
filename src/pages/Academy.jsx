@@ -4,6 +4,7 @@ import CourseCard from '../components/CourseCard.jsx';
 import EnrolForm from '../components/EnrolForm.jsx';
 import ArtistsGrid from '../components/ArtistsGrid.jsx';
 import MessageForm from '../components/MessageForm.jsx';
+import { useLang } from '../lib/i18n.jsx';
 
 const TRACKS = [['all', 'All'], ['dj', 'DJ'], ['production', 'Production']];
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'All levels'];
@@ -24,6 +25,7 @@ const FAQ = [
 ];
 
 export default function Academy({ courses, sessions, djs, go, goToQuote }) {
+  const { t } = useLang();
   const [track, setTrack] = useState('all');
   const [level, setLevel] = useState(null);
   const [enrolCourse, setEnrolCourse] = useState('');
@@ -92,8 +94,8 @@ export default function Academy({ courses, sessions, djs, go, goToQuote }) {
 
           {courses.length === 0 ? (
             <div className="empty">
-              <p style={{ marginBottom: 'var(--space-5)' }}>First courses open soon. Leave your details and we'll tell you first.</p>
-              <MessageForm topic="academy_interest" id="ac-int" button="Register interest" done="Noted. You'll hear first when courses open." />
+              <p style={{ marginBottom: 'var(--space-5)' }}>{t('academy.interest.text')}</p>
+              <MessageForm topic="academy_interest" id="ac-int" button={t('academy.interest.button')} done={t('academy.interest.done')} />
             </div>
           ) : (
             <>

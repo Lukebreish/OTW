@@ -1,9 +1,26 @@
 import { useEffect, useState } from 'react';
 import { HalfWorld, Icon, Logo } from './ui.jsx';
 import { ENTITY_OF, NAV } from '../lib/routes.js';
+import { useLang, readyLangs } from '../lib/i18n.jsx';
+
+// EN / FR / NL. Hidden until a second language is marked ready in lib/i18n.jsx.
+function LangSwitch({ className = '' }) {
+  const { lang, setLang, t } = useLang();
+  const langs = readyLangs();
+  if (langs.length < 2) return null;
+  return (
+    <div className={`lang-switch ${className}`} role="group" aria-label={t('nav.lang')}>
+      {langs.map((l) => (
+        <button key={l.code} className="label label-xs" lang={l.code} title={l.name}
+          aria-pressed={lang === l.code} onClick={() => setLang(l.code)}>{l.label}</button>
+      ))}
+    </div>
+  );
+}
 
 export default function Header({ route, go }) {
   const [open, setOpen] = useState(false);
+  const { t } = useLang();
   const entity = ENTITY_OF[route] || 'main';
   const activeKey = route === 'about' ? 'about' : entity;
 
@@ -17,12 +34,12 @@ export default function Header({ route, go }) {
   return (
     <header className="header" data-entity={entity}>
       <div className="wrap header-inner">
-        <button className="header-logo" onClick={() => nav('home')} aria-label="Off The World, home">
+        <button className="header-logo" onClick={() => nav('home')} aria-label={t('nav.home')}>
           <Logo entity={entity} />
         </button>
 
         <nav className="header-nav" aria-label="Main">
-          {NAV.map(([key, label]) => (
+          {NAV.map(([key]) => (
             <button
               key={key}
               data-entity={key === 'about' ? 'main' : key}
@@ -31,16 +48,17 @@ export default function Header({ route, go }) {
               onClick={() => nav(key)}
             >
               <HalfWorld size={16} />
-              {label}
+              {t(`nav.${key}`)}
             </button>
           ))}
         </nav>
 
         <div className="header-right">
+          <LangSwitch />
           <button className="btn btn-primary btn-sm header-cta" data-entity="events" onClick={() => nav('quote')}>
-            Get a quote
+            {t('nav.quote')}
           </button>
-          <button className="header-menu-btn" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open}>
+          <button className="header-menu-btn" onClick={() => setOpen(true)} aria-label={t('nav.menu.open')} aria-expanded={open}>
             <Icon name="menu" />
           </button>
         </div>
@@ -50,21 +68,22 @@ export default function Header({ route, go }) {
         <div className="overlay" role="dialog" aria-modal="true" aria-label="Menu">
           <div className="wrap overlay-top">
             <span className="header-logo"><Logo entity={entity} /></span>
-            <button className="header-menu-btn" style={{ display: 'inline-flex' }} onClick={() => setOpen(false)} aria-label="Close menu">
+            <button className="header-menu-btn" style={{ display: 'inline-flex' }} onClick={() => setOpen(false)} aria-label={t('nav.menu.close')}>
               <Icon name="x" />
             </button>
           </div>
           <nav className="wrap overlay-nav" aria-label="Mobile">
-            {NAV.map(([key, label]) => (
+            {NAV.map(([key]) => (
               <button key={key} data-entity={key === 'about' ? 'main' : key} onClick={() => nav(key)}>
                 <HalfWorld size={24} />
-                {label}
+                {t(`nav.${key}`)}
               </button>
             ))}
             <button data-entity="events" onClick={() => nav('quote')}>
               <HalfWorld size={24} />
-              Get a quote
+              {t('nav.quote')}
             </button>
+            <LangSwitch className="lang-switch-overlay" />
           </nav>
         </div>
       )}

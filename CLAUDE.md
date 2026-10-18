@@ -31,3 +31,13 @@ Auth uses the PKCE flow so email links (`/?to=ops`) don't clash with hash routin
 go in `djs` (publicly readable). Email, phone and location go in `dj_contacts`
 — team-only RLS; never move them into `djs`. Links live in `dj_invite_links`;
 set `active = false` to kill one.
+
+## Languages (EN / FR / NL)
+English is the default and the fallback. Public UI copy goes in `src/i18n/en.js` (keys grouped
+by page) and is read with `const { t } = useLang()` from `src/lib/i18n.jsx`; never hardcode new
+public copy in JSX. French and Dutch go in `fr.js` / `nl.js`; missing keys show English.
+Database content (services, packages, djs, events, courses, releases, stats, testimonials) has a
+`translations` jsonb column (`{"fr": {"title": …}, "nl": {…}}`, migration 014); render it with
+`loc(row, 'field')`. A language appears in the header switch only when `ready: true` in `LANGS`.
+Ops pages stay English only.
+

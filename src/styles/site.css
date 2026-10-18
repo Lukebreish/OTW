@@ -503,3 +503,11 @@ button.tag[aria-pressed="true"] { background: var(--accent); border-color: var(-
 .artist-photo img, .profile-photo img, .event-card .event-photo img { transition: filter var(--duration-base, 240ms) var(--ease-out); }
 .artist-card:hover .artist-photo img, .artist-card:focus-visible .artist-photo img, .artist-card[aria-pressed="true"] .artist-photo img,
 .profile-photo:hover img, .event-card:hover .event-photo img, .event-card:focus-within .event-photo img { filter: none; }
+
+/* Language switch (EN / FR / NL), hidden until a second language is ready */
+.lang-switch { display: flex; gap: var(--space-3); }
+.lang-switch button { color: var(--text-secondary); padding: var(--space-2) 0; border-bottom: var(--rule) solid transparent; }
+.lang-switch button:hover { color: var(--accent); }
+.lang-switch button[aria-pressed="true"] { color: var(--text-primary); border-bottom-color: var(--accent); }
+.lang-switch-overlay { margin-top: var(--space-6); }
+@media (max-width: 900px) { .header-right > .lang-switch { display: none; } }
