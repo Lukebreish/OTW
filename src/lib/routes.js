@@ -28,7 +28,7 @@ export const NAV = [
   ['about', 'About'],
 ];
 
-export const CONTACT_EMAIL = 'hello@offtheworld.events';
+export const CONTACT_EMAIL = 'info@offtheworld.be';
 
 export function resolveRoute(hash) {
   const key = (hash || '').replace('#', '') || 'home';

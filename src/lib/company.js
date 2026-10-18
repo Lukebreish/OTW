@@ -7,7 +7,7 @@ export const COMPANY = {
   address: '',          // street, postcode, city
   vat: '',              // BE0xxx.xxx.xxx
   iban: '',
-  email: 'hello@offtheworld.events',
+  email: 'info@offtheworld.be',
   phone: '',
 };
 export const VAT_RATE = null;
