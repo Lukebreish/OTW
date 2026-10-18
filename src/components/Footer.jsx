@@ -1,5 +1,6 @@
 import { HalfWorld, Logo } from './ui.jsx';
 import { CONTACT_EMAIL } from '../lib/routes.js';
+import MessageForm from './MessageForm.jsx';
 
 const COLUMNS = [
   ['events', 'Events', [['events', 'Upcoming nights'], ['services', 'Production'], ['packages', 'Packages'], ['quote', 'Get a quote']]],
@@ -30,26 +31,14 @@ export default function Footer({ go }) {
           <div className="footer-col footer-news">
             <h4 className="label"><HalfWorld size={16} />Newsletter</h4>
             <p className="muted" style={{ marginBottom: 'var(--space-4)' }}>Nights, courses and releases. Once a month.</p>
-            <form
-              className="inline-form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const email = new FormData(e.currentTarget).get('email');
-                window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Newsletter')}&body=${encodeURIComponent(`Add me: ${email}`)}`;
-              }}
-            >
-              <div className="field">
-                <label htmlFor="nl-email" className="label label-xs">Email</label>
-                <input id="nl-email" name="email" type="email" required placeholder="you@example.com" />
-              </div>
-              <button className="btn btn-primary" type="submit">Sign up</button>
-            </form>
+            <MessageForm topic="newsletter" variant="inline" id="nl" button="Sign up" done="You're on the list." />
           </div>
         </div>
 
         <div className="footer-bottom label label-xs">
           <span>© {new Date().getFullYear()} OTW · Off The World · Brussels</span>
           <div className="footer-socials">
+            <button onClick={() => go('privacy')}>Privacy</button>
             <a href={`mailto:${CONTACT_EMAIL}`}>Email</a>
             <a href="https://instagram.com/" target="_blank" rel="noreferrer">Instagram</a>
           </div>

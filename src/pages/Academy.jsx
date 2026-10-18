@@ -3,7 +3,7 @@ import { HalfWorld } from '../components/ui.jsx';
 import CourseCard from '../components/CourseCard.jsx';
 import EnrolForm from '../components/EnrolForm.jsx';
 import ArtistsGrid from '../components/ArtistsGrid.jsx';
-import { CONTACT_EMAIL } from '../lib/routes.js';
+import MessageForm from '../components/MessageForm.jsx';
 
 const TRACKS = [['all', 'All'], ['dj', 'DJ'], ['production', 'Production']];
 const LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'All levels'];
@@ -92,8 +92,8 @@ export default function Academy({ courses, sessions, djs, go, goToQuote }) {
 
           {courses.length === 0 ? (
             <div className="empty">
-              First courses open soon.{' '}
-              <a href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('OTW Academy · interested')}`}>Register interest →</a>
+              <p style={{ marginBottom: 'var(--space-5)' }}>First courses open soon. Leave your details and we'll tell you first.</p>
+              <MessageForm topic="academy_interest" id="ac-int" button="Register interest" done="Noted. You'll hear first when courses open." />
             </div>
           ) : (
             <>

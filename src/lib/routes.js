@@ -4,6 +4,7 @@
 export const ENTITY_OF = {
   home: 'main',
   about: 'main',
+  privacy: 'main', // linked from the footer, not in NAV
   events: 'events',
   services: 'events',
   packages: 'events',

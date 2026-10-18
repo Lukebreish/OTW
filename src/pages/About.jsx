@@ -1,5 +1,6 @@
 import { HalfWorld } from '../components/ui.jsx';
 import { CONTACT_EMAIL } from '../lib/routes.js';
+import MessageForm from '../components/MessageForm.jsx';
 
 const SIDES = [
   ['events', 'Events', 'Club nights we run and events we produce. DJs, sound, lighting, staging and crew.'],
@@ -43,13 +44,13 @@ export default function About({ go }) {
             </p>
           </div>
           <div>
-            <ul className="hw-list">
+            <MessageForm topic="contact" variant="full" id="contact" button="Send message" done="Thanks. We'll reply within one business day." />
+            <ul className="hw-list" style={{ marginTop: 'var(--space-6)' }}>
               <li><HalfWorld size={16} /><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></li>
               <li><HalfWorld size={16} />Brussels, Belgium</li>
             </ul>
             <div className="actions" data-entity="events">
-              <button className="btn btn-primary" onClick={() => go('quote')}>Get a quote</button>
-              <a className="btn btn-secondary" href={`mailto:${CONTACT_EMAIL}`}>Email us</a>
+              <button className="btn btn-secondary" onClick={() => go('quote')}>Planning an event? Get a quote →</button>
             </div>
           </div>
         </div>

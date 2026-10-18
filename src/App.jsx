@@ -13,6 +13,7 @@ import Artists from './pages/Artists.jsx';
 import Join from './pages/Join.jsx';
 import Records from './pages/Records.jsx';
 import About from './pages/About.jsx';
+import Privacy from './pages/Privacy.jsx';
 import Ops from './pages/Ops.jsx';
 import ArtistServices from './pages/ArtistServices.jsx';
 import ClientPage from './pages/ClientPage.jsx';
@@ -143,6 +144,7 @@ export default function App() {
             {route === 'artist-services' && <ArtistServices go={go} />}
             {route === 'records' && <Records releases={data.releases} />}
             {route === 'about' && <About go={go} />}
+            {route === 'privacy' && <Privacy />}
           </>
         )}
       </main>
