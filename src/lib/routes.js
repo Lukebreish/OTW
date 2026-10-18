@@ -30,6 +30,8 @@ export const NAV = [
 ];
 
 export const CONTACT_EMAIL = 'info@offtheworld.be';
+export const INSTAGRAM_URL = 'https://www.instagram.com/offtheworld.be/';
+export const SOUNDCLOUD_URL = 'https://soundcloud.com/off-the-world-records';
 
 export function resolveRoute(hash) {
   const key = (hash || '').replace('#', '') || 'home';
