@@ -528,9 +528,25 @@ button.tag[aria-pressed="true"] { background: var(--accent); border-color: var(-
 .tier-dash { width: 16px; flex: none; }
 .tier-audience { margin-top: auto; padding-top: var(--space-5); font-size: var(--text-sm); }
 .tier-btn { margin-top: var(--space-5); align-self: flex-start; }
+.tier-slot { display: flex; }
+.tier-slot > .tier { flex: 1; }
+.tier-picker { display: none; }
 @media (max-width: 900px) {
-  .tier-row { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(280px, 86%); gap: var(--space-4); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--space-4); }
-  .tier { scroll-snap-align: center; }
+  .tier-picker { display: grid; grid-template-columns: repeat(3, 1fr); border: var(--rule) solid var(--rule-color); margin-bottom: var(--space-6); }
+  .tier-chip { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); padding: var(--space-3); text-align: left; color: var(--text-secondary); transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+  .tier-chip + .tier-chip { border-left: var(--rule) solid var(--rule-color); }
+  .tier-chip .label { line-height: 1.2; }
+  .tier-chip-price { font-family: var(--font-display); font-weight: 800; font-size: var(--text-lg); line-height: 1; color: var(--text-primary); }
+  .tier-chip .hw { position: absolute; top: var(--space-3); right: var(--space-3); }
+  .tier-chip[aria-selected="true"] { background: var(--accent); color: var(--on-accent); }
+  .tier-chip[aria-selected="true"] .tier-chip-price { color: var(--on-accent); }
+  .tier-chip[aria-selected="true"] .hw { background: var(--on-accent); }
+  .tier-row { display: block; }
+  .tier-slot { display: none; }
+  .tier-slot.is-active { display: flex; }
+  .tier, .tier.is-featured { border: var(--rule) solid var(--rule-color); padding: var(--space-5); }
+  .tier.is-featured { border-color: var(--accent); }
+  .tier-top { min-height: 0; }
   .tier-btn { align-self: stretch; }
   .addon-row { flex-direction: column; align-items: flex-start; gap: var(--space-3); }
   .brochure-link { height: auto; padding-block: var(--space-3); white-space: normal; }
@@ -558,3 +574,6 @@ button.tag[aria-pressed="true"] { background: var(--accent); border-color: var(-
 .track-door { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-6) !important; text-align: left; transition: color var(--duration-fast) var(--ease-out); }
 .track-door:hover .btn-ghost { color: var(--accent); }
 .track-door .tier-price { margin: var(--space-3) 0 0; font-size: var(--text-xl); }
+@media (max-width: 900px) {
+  .addon-row { flex-direction: column; align-items: flex-start; gap: var(--space-3); }
+}

@@ -18,6 +18,7 @@ import Ops from './pages/Ops.jsx';
 import ArtistServices from './pages/ArtistServices.jsx';
 import ClientPage from './pages/ClientPage.jsx';
 import AddDj from './pages/AddDj.jsx';
+import { useLang } from './lib/i18n.jsx';
 
 function useOtwData() {
   const [state, setState] = useState({ status: 'loading' });
@@ -71,6 +72,7 @@ function useOtwData() {
 }
 
 export default function App() {
+  const { t } = useLang();
   const [route, setRoute] = useState(() => {
     if (typeof window === 'undefined') return 'home';
     // Auth email links land on /?to=ops
@@ -149,7 +151,12 @@ export default function App() {
         )}
       </main>
 
-      {route !== 'quote' && !standalone && (
+      {route === 'academy' && (
+        <button className="sticky-cta btn btn-primary" data-entity="academy" onClick={() => document.getElementById('book')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+          {t('academy.tier.book')} →
+        </button>
+      )}
+      {route !== 'quote' && route !== 'academy' && !standalone && (
         <button className="sticky-cta btn btn-primary" data-entity="events" onClick={() => goToQuote()}>
           Get a quote →
         </button>

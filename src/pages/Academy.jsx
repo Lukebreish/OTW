@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HalfWorld } from '../components/ui.jsx';
 import TierCard from '../components/TierCard.jsx';
 import FirstCallForm from '../components/FirstCallForm.jsx';
@@ -25,20 +25,15 @@ export default function Academy({ courses, djs, go, goToQuote }) {
   const { t, loc } = useLang();
   const [track, setTrack] = useState(initialTrack);
   const [callCourse, setCallCourse] = useState('');
-  const rowRef = useRef(null);
+  const [picked, setPicked] = useState(null);
 
   const tiers = courses.filter((c) => (c.kind || 'course') === 'course');
   const shown = tiers.filter((c) => c.track === track);
   const addons = courses.filter((c) => c.kind === 'addon' && c.track === track);
   const compareRows = (shown.find((c) => c.featured) || shown[0])?.compare || [];
-
-  // On narrow screens the tiers become a swipe row; open it on the recommended one.
-  useEffect(() => {
-    const row = rowRef.current;
-    if (!row || row.scrollWidth <= row.clientWidth) return;
-    const featured = row.querySelector('.tier.is-featured');
-    if (featured) row.scrollLeft = featured.offsetLeft - row.offsetLeft - (row.clientWidth - featured.clientWidth) / 2;
-  }, [track, shown.length]);
+  // On phones one tier shows at a time, picked from a row of chips; it opens on the recommended one.
+  const activeId = shown.some((c) => c.id === picked) ? picked : (shown.find((c) => c.featured) || shown[0])?.id;
+  useEffect(() => { setPicked(null); }, [track]);
 
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   const openTrack = (key) => { setTrack(key); scrollTo('courses'); };
@@ -90,8 +85,21 @@ export default function Academy({ courses, djs, go, goToQuote }) {
                 ))}
               </div>
 
-              <div className="tier-row" ref={rowRef}>
-                {shown.map((c) => <TierCard key={c.id} course={c} onBook={book} />)}
+              <div className="tier-picker" role="tablist" aria-label={t('academy.courses.title')}>
+                {shown.map((c) => (
+                  <button key={c.id} role="tab" className="tier-chip" aria-selected={c.id === activeId} onClick={() => setPicked(c.id)}>
+                    <span className="label label-xs">{loc(c, 'title')}</span>
+                    <span className="tier-chip-price">{formatPrice(c.price)}</span>
+                    {c.featured && <span className="hw hw-16" aria-hidden="true" />}
+                  </button>
+                ))}
+              </div>
+              <div className="tier-row">
+                {shown.map((c) => (
+                  <div key={c.id} className={`tier-slot ${c.id === activeId ? 'is-active' : ''}`}>
+                    <TierCard course={c} onBook={book} />
+                  </div>
+                ))}
               </div>
 
               {compareRows.length > 0 && (
