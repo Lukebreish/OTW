@@ -142,7 +142,7 @@ export default function App() {
             )}
             {route === 'join' && <Join />}
             {route === 'artist-services' && <ArtistServices go={go} />}
-            {route === 'records' && <Records releases={data.releases} />}
+            {route === 'records' && <Records releases={data.releases} go={go} />}
             {route === 'about' && <About go={go} />}
             {route === 'privacy' && <Privacy />}
           </>

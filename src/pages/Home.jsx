@@ -1,6 +1,6 @@
 import { formatEventDate } from '../components/EventCard.jsx';
 import ArtistsGrid from '../components/ArtistsGrid.jsx';
-import CourseCard from '../components/CourseCard.jsx';
+import { useLang } from '../lib/i18n.jsx';
 import { HalfWorld } from '../components/ui.jsx';
 import { formatPrice } from '../lib/payments.js';
 
@@ -31,9 +31,15 @@ export default function Home({ data, go, goToQuote }) {
   const fromPrice = prices.length ? Math.min(...prices) : null;
   const artists = [...djs].sort((a, b) => Number(!!b.certified) - Number(!!a.certified));
   const anyCertified = djs.some((d) => d.certified);
-  const nextCourses = [...courses]
-    .sort((a, b) => (a.starts_on ? new Date(a.starts_on) : Infinity) - (b.starts_on ? new Date(b.starts_on) : Infinity))
-    .slice(0, 3);
+  const { t } = useLang();
+  const courseFrom = (track) => {
+    const prices = courses.filter((c) => (c.kind || 'course') === 'course' && c.track === track && c.price != null).map((c) => Number(c.price));
+    return prices.length ? Math.min(...prices) : null;
+  };
+  const openAcademy = (track) => {
+    try { window.sessionStorage.setItem('otw-academy-track', track); } catch { /* storage blocked */ }
+    go('academy');
+  };
   const upcomingRelease = releases.filter((r) => r.release_date && new Date(r.release_date) > new Date()).pop();
   const release = upcomingRelease || releases.find((r) => !r.release_date || new Date(r.release_date) <= new Date()) || null;
   const releaseUpcoming = release && release === upcomingRelease;
@@ -199,15 +205,22 @@ export default function Home({ data, go, goToQuote }) {
           <div className="wrap">
             <div className="section-head">
               <div>
-                <div className="eyebrow label"><HalfWorld size={16} />OTW Academy · Courses</div>
-                <h2 className="h-xl">Learn to DJ. Learn to produce.</h2>
-                <p className="lead">Small groups on club gear in Brussels. DJ courses also on Plug The Jack.</p>
+                <div className="eyebrow label"><HalfWorld size={16} />{t('home.academy.tag')}</div>
+                <h2 className="h-xl">{t('home.academy.title')}</h2>
+                <p className="lead">{t('home.academy.lead')}</p>
               </div>
-              <button className="btn btn-ghost" onClick={() => go('academy')}>All courses →</button>
+              <button className="btn btn-ghost" onClick={() => go('academy')}>{t('home.academy.all')}</button>
             </div>
-            {nextCourses.length > 0 ? (
-              <div className="card-grid">
-                {nextCourses.map((c) => <CourseCard key={c.id} course={c} onEnrol={() => go('academy')} />)}
+            {courseFrom('dj') != null || courseFrom('production') != null ? (
+              <div className="cells cells-2">
+                {['dj', 'production'].filter((k) => courseFrom(k) != null).map((k) => (
+                  <button key={k} className="track-door" onClick={() => openAcademy(k)}>
+                    <span className="label label-xs muted">{t('home.academy.from', { price: formatPrice(courseFrom(k)) })}</span>
+                    <h3>{t(`home.academy.${k}.title`)}</h3>
+                    <p className="muted">{t(`home.academy.${k}.body`)}</p>
+                    <span className="btn btn-ghost">{t('home.academy.go')}</span>
+                  </button>
+                ))}
               </div>
             ) : (
               <p className="empty">First courses open soon. <button className="btn-ghost label" onClick={() => go('academy')}>Register interest →</button></p>

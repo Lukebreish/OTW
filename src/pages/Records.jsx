@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Honeypot from '../components/Honeypot.jsx';
 import { supabase } from '../lib/supabaseClient.js';
 import { HalfWorld } from '../components/ui.jsx';
+import { useLang } from '../lib/i18n.jsx';
 
 const DATE_FMT = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', timeZone: 'Europe/Brussels' });
 const shortDate = (d) => DATE_FMT.format(new Date(d)).replace('/', '.');
@@ -97,7 +98,8 @@ function DemoForm() {
   );
 }
 
-export default function Records({ releases }) {
+export default function Records({ releases, go }) {
+  const { t } = useLang();
   const [format, setFormat] = useState(null);
   const now = new Date();
   const upcoming = releases.filter((r) => r.release_date && new Date(r.release_date) > now);
@@ -195,6 +197,11 @@ export default function Records({ releases }) {
             <p className="body" style={{ marginTop: 'var(--space-5)' }}>
               Private links only, no attachments. Finished or near-finished tracks. We listen to everything and reply if it's a fit.
             </p>
+            {go && (
+              <button className="btn btn-ghost" style={{ marginTop: 'var(--space-5)' }} onClick={() => go('academy')} data-entity="academy">
+                {t('records.demos.courses')}
+              </button>
+            )}
           </div>
           <DemoForm />
         </div>

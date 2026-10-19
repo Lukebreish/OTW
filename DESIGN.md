@@ -63,6 +63,8 @@ quote, supply cells, stats, packages/next-night row), proof (logos,
 testimonials), Academy (certified DJs, next courses, class→club path),
 Records (featured release), sticky mobile quote button.
 
+Academy packages: TierCard (three tiers per track; the featured one gets a 2px accent frame, Recommended tag-fill, accent price and the primary button), compare table inside a FAQ row, add-on rows, FirstCallForm. On narrow screens the tiers become a snap-scrolling row opened on the featured tier.
+
 Not built yet: course and release detail pages, Tracklist.
 
 ## Decisions Log
@@ -87,3 +89,4 @@ Not built yet: course and release detail pages, Tracklist.
 | 2026-10-12 | Photos stay grayscale but turn colour on hover/focus; the selected artist stays in colour | DJs asked to be seen in colour; keeps the mono look at rest |
 | 2026-10-18 | Newsletter, contact and "register interest" are real forms (`MessageForm`, `site_messages`, migration 013); About gets a contact form; footer links to a Privacy page (`#privacy`) | Every interaction becomes a lead in #ops; GDPR notice before launch. Same field/inline-form components, no new styles |
 | 2026-10-18 | Languages: EN default, FR + NL planned. UI copy in `src/i18n/*.js` via `useLang().t()`; database content via `translations` jsonb + `loc()` (migration 014). Header EN/FR/NL switch (`.lang-switch`, ruled underline, no new tokens) hidden until a second language is marked ready | One place per language for copy; no half-translated language reaches visitors |
+| 2026-10-19 | Academy sells one-to-one packages: three tiers per track (DJ, Production) behind a DJ / Production tab, plus add-ons (migration 015, new `courses` columns: kind, tier_label, price_note, value_note, outcome, excludes, audience, featured, compare). Placeholder group courses, 1:1 Mentorship and the weekly timetable are unpublished. Buttons book a free first call (`course_bookings.status = 'call_requested'`, lead text "First call: …"), no payment step. Home shows two track doors with "From" prices; Records links to production courses. Brochure PDFs in `public/brochures/` | Packages built so the middle tier is the obvious choice; the first call sells the package before any payment |
