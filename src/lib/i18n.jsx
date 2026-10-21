@@ -9,7 +9,7 @@ import nl from '../i18n/nl.js';
 export const LANGS = [
   { code: 'en', label: 'EN', name: 'English', dict: en, ready: true, locale: 'en-GB' },
   { code: 'fr', label: 'FR', name: 'Français', dict: fr, ready: false, locale: 'fr-BE' },
-  { code: 'nl', label: 'NL', name: 'Nederlands', dict: nl, ready: false, locale: 'nl-BE' },
+  { code: 'nl', label: 'NL', name: 'Nederlands', dict: nl, ready: true, locale: 'nl-BE' },
 ];
 export const DEFAULT_LANG = 'en';
 const KEY = 'otw-lang';
