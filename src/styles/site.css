@@ -61,6 +61,11 @@ h3 { font-size: var(--text-xl); }
 .btn-ghost:hover { color: var(--accent); }
 .btn:active { background: var(--otw-grey-900); }
 .btn-ghost:active { background: none; }
+/* On phones a long label wraps instead of forcing the page sideways. Buttons
+   are nowrap by default, which made a long one wider than the screen and
+   dragged its whole grid column with it. Longer French and Dutch labels hit
+   this on more pages than English did. */
+@media (max-width: 640px) { .btn { white-space: normal; height: auto; min-height: var(--control-height); padding-top: var(--space-3); padding-bottom: var(--space-3); } }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
 .btn:disabled:hover { background: inherit; }
 .btn-primary:disabled:hover { background: var(--accent); color: var(--on-accent); }
@@ -265,7 +270,10 @@ button.tag[aria-pressed="true"] { background: var(--accent); border-color: var(-
 /* ---------- Misc ---------- */
 .empty { padding: var(--space-6) 0; border-top: var(--rule) solid var(--rule-color); border-bottom: var(--rule) solid var(--rule-color); color: var(--text-secondary); }
 .status-page { padding-block: var(--space-10); color: var(--text-secondary); }
+/* min-width: 0 stops a wide child (a long button, an input) from pushing a
+   column past the screen edge. */
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
+.split > * { min-width: 0; }
 @media (max-width: 860px) { .split { grid-template-columns: 1fr; gap: var(--space-7); } }
 .icon { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; fill: none; }
 
@@ -353,7 +361,10 @@ button.tag[aria-pressed="true"] { background: var(--accent); border-color: var(-
 @media (max-width: 640px) { .supply-cell { min-height: 0; } .supply-cta { margin-top: var(--space-3); } }
 
 /* ---------- Home ---------- */
-.h-xl { font-size: clamp(2.25rem, 6vw, var(--text-3xl)); max-width: 16ch; }
+/* break-word only kicks in when a single word genuinely doesn't fit, which
+   English never hits but longer Dutch and French compounds do. */
+.h-xl { font-size: clamp(2.25rem, 6vw, var(--text-3xl)); max-width: 16ch; overflow-wrap: break-word; }
+h1, h2, h3 { overflow-wrap: break-word; }
 
 .home-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); min-height: calc(100vh - 80px); border-bottom: var(--rule) solid var(--rule-color); }
 .home-hero-copy { display: flex; flex-direction: column; justify-content: center; padding-block: var(--space-9); margin: 0; max-width: none; }
