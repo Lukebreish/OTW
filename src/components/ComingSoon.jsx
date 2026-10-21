@@ -1,5 +1,6 @@
 import { HalfWorld } from './ui.jsx';
 import { CONTACT_EMAIL } from '../lib/routes.js';
+import { useLang } from '../lib/i18n.jsx';
 
 // Division hero + "not open yet" block, used by Academy and Records until
 // their own content (courses, releases) is in Supabase.
@@ -18,6 +19,7 @@ export function DivisionHero({ tag, title, lead, children }) {
 }
 
 export function ComingSoon({ subject, title, body, points }) {
+  const { t } = useLang();
   return (
     <section className="section">
       <div className="wrap split">
@@ -26,7 +28,7 @@ export function ComingSoon({ subject, title, body, points }) {
           <p className="body" style={{ marginTop: 'var(--space-5)' }}>{body}</p>
           <div className="actions">
             <a className="btn btn-primary" href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}`}>
-              Register interest
+              {t('coming.register')}
             </a>
           </div>
         </div>

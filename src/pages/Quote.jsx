@@ -3,11 +3,23 @@ import { supabase } from '../lib/supabaseClient.js';
 import { recommendPackageId } from '../lib/recommend.js';
 import { HalfWorld } from '../components/ui.jsx';
 import Honeypot from '../components/Honeypot.jsx';
+import { useLang } from '../lib/i18n.jsx';
 
-export const EVENT_TYPES = ['Birthday', 'Wedding', 'Corporate event', 'Private party', 'Brand event', 'Club / nightlife', 'Festival', 'Other'];
-const SIZES = [['lt30', 'Up to 30'], ['30-100', '30–100'], ['100-300', '100–300'], ['300+', '300+']];
-const DURATIONS = [['2-4', '2–4 hours'], ['4-6', '4–6 hours'], ['6-8', '6–8 hours'], ['8+', '8+ hours']];
-const SETTINGS = ['Indoor', 'Outdoor', 'Not sure yet'];
+// [value stored in the database, translation key]. The value stays English so
+// ops and the pipeline read one language whatever the visitor picked.
+export const EVENT_TYPES = [
+  ['Birthday', 'birthday'],
+  ['Wedding', 'wedding'],
+  ['Corporate event', 'corporate'],
+  ['Private party', 'private'],
+  ['Brand event', 'brand'],
+  ['Club / nightlife', 'club'],
+  ['Festival', 'festival'],
+  ['Other', 'other'],
+];
+const SIZES = [['lt30', 'lt30'], ['30-100', 'mid'], ['100-300', 'large'], ['300+', 'xl']];
+const DURATIONS = [['2-4', 'short'], ['4-6', 'mid'], ['6-8', 'long'], ['8+', 'xl']];
+const SETTINGS = [['Indoor', 'indoor'], ['Outdoor', 'outdoor'], ['Not sure yet', 'unsure']];
 
 const PACKAGE_LABELS = {
   'the-party': 'The Party',
@@ -34,6 +46,7 @@ export default function Quote({ categories, prefill }) {
   const [contact, setContact] = useState({ name: '', email: '', phone: '', location: '', eventDate: '', notes: '' });
   const [submitState, setSubmitState] = useState('idle');
   const [trap, setTrap] = useState('');
+  const { t, loc } = useLang();
 
   const chooseDjOnly = (value) => {
     setDjOnly(value);
@@ -79,24 +92,28 @@ export default function Quote({ categories, prefill }) {
     return (
       <section className="section">
         <div className="wrap wrap-narrow">
-          <div className="eyebrow label"><HalfWorld size={16} />Request sent</div>
-          <h1>Thanks. We've got it.</h1>
+          <div className="eyebrow label"><HalfWorld size={16} />{t('quote.sent.tag')}</div>
+          <h1>{t('quote.sent.title')}</h1>
           <p className="lead" style={{ marginTop: 'var(--space-5)' }}>
-            Our team will review your request and come back with a tailored quote within one business day.
+            {t('quote.sent.body')}
           </p>
         </div>
       </section>
     );
   }
 
-  const stepLabel = (title) => <div className="step-label label">Step {step + 1} of {totalSteps} · {title}</div>;
+  const stepLabel = () => (
+    <div className="step-label label">
+      {t('quote.step', { n: step + 1, total: totalSteps, title: t(`quote.step.${step}`) })}
+    </div>
+  );
 
   return (
     <section className="section">
       <div className="wrap wrap-narrow">
-        <div className="eyebrow label"><HalfWorld size={16} />OTW Events</div>
-        <h1>Get a quote</h1>
-        <p className="lead" style={{ marginTop: 'var(--space-5)' }}>Tell us about your event. We'll work out the rest.</p>
+        <div className="eyebrow label"><HalfWorld size={16} />{t('quote.tag')}</div>
+        <h1>{t('quote.title')}</h1>
+        <p className="lead" style={{ marginTop: 'var(--space-5)' }}>{t('quote.lead')}</p>
 
         <div className="progress" aria-hidden="true">
           {Array.from({ length: totalSteps }).map((_, i) => <span key={i} className={i <= step ? 'done' : ''} />)}
@@ -104,49 +121,53 @@ export default function Quote({ categories, prefill }) {
 
         {step === 0 && (
           <>
-            {stepLabel('What’s the event?')}
-            <p className="label label-xs muted" style={{ marginBottom: 'var(--space-3)' }}>What are you after?</p>
+            {stepLabel()}
+            <p className="label label-xs muted" style={{ marginBottom: 'var(--space-3)' }}>{t('quote.after')}</p>
             <div className="tags" style={{ marginBottom: 'var(--space-6)' }}>
-              <Choice active={!djOnly} onClick={() => chooseDjOnly(false)}>An event</Choice>
-              <Choice active={djOnly} onClick={() => chooseDjOnly(true)}>Booking a DJ only</Choice>
+              <Choice active={!djOnly} onClick={() => chooseDjOnly(false)}>{t('quote.after.event')}</Choice>
+              <Choice active={djOnly} onClick={() => chooseDjOnly(true)}>{t('quote.after.dj')}</Choice>
             </div>
-            <p className="label label-xs muted" style={{ marginBottom: 'var(--space-3)' }}>The event</p>
+            <p className="label label-xs muted" style={{ marginBottom: 'var(--space-3)' }}>{t('quote.event')}</p>
             <div className="tags">
-              {EVENT_TYPES.map((t) => <Choice key={t} active={eventType === t} onClick={() => setEventType(t)}>{t}</Choice>)}
+              {EVENT_TYPES.map(([value, key]) => (
+                <Choice key={value} active={eventType === value} onClick={() => setEventType(value)}>{t(`quote.type.${key}`)}</Choice>
+              ))}
             </div>
           </>
         )}
 
         {step === 1 && (
           <>
-            {stepLabel('Size and length')}
-            <p className="label label-xs muted" style={{ marginBottom: 'var(--space-3)' }}>Guests</p>
+            {stepLabel()}
+            <p className="label label-xs muted" style={{ marginBottom: 'var(--space-3)' }}>{t('quote.guests')}</p>
             <div className="tags" style={{ marginBottom: 'var(--space-6)' }}>
-              {SIZES.map(([val, label]) => <Choice key={val} active={eventSize === val} onClick={() => setEventSize(val)}>{label}</Choice>)}
+              {SIZES.map(([val, key]) => <Choice key={val} active={eventSize === val} onClick={() => setEventSize(val)}>{t(`quote.size.${key}`)}</Choice>)}
             </div>
-            <p className="label label-xs muted" style={{ marginBottom: 'var(--space-3)' }}>Duration</p>
+            <p className="label label-xs muted" style={{ marginBottom: 'var(--space-3)' }}>{t('quote.duration')}</p>
             <div className="tags">
-              {DURATIONS.map(([val, label]) => <Choice key={val} active={duration === val} onClick={() => setDuration(val)}>{label}</Choice>)}
+              {DURATIONS.map(([val, key]) => <Choice key={val} active={duration === val} onClick={() => setDuration(val)}>{t(`quote.duration.${key}`)}</Choice>)}
             </div>
           </>
         )}
 
         {step === 2 && (
           <>
-            {stepLabel('The setting')}
+            {stepLabel()}
             <div className="tags">
-              {SETTINGS.map((s) => <Choice key={s} active={setting === s} onClick={() => setSetting(s)}>{s}</Choice>)}
+              {SETTINGS.map(([value, key]) => (
+                <Choice key={value} active={setting === value} onClick={() => setSetting(value)}>{t(`quote.setting.${key}`)}</Choice>
+              ))}
             </div>
           </>
         )}
 
         {step === 3 && (
           <>
-            {stepLabel('What do you need?')}
-            <p className="muted" style={{ marginBottom: 'var(--space-5)' }}>Pick as many as apply. Not sure is fine too.</p>
+            {stepLabel()}
+            <p className="muted" style={{ marginBottom: 'var(--space-5)' }}>{t('quote.services.lead')}</p>
             <div className="tags">
               {categories.map((c) => (
-                <Choice key={c.id} active={servicesWanted.includes(c.slug)} onClick={() => toggleService(c.slug)}>{c.name}</Choice>
+                <Choice key={c.id} active={servicesWanted.includes(c.slug)} onClick={() => toggleService(c.slug)}>{loc(c, 'name')}</Choice>
               ))}
             </div>
           </>
@@ -156,58 +177,58 @@ export default function Quote({ categories, prefill }) {
           <>
             {!djOnly && (
               <div className="field-block">
-                <div className="label label-xs">Based on what you've told us</div>
+                <div className="label label-xs">{t('quote.rec.label')}</div>
                 <h2 style={{ marginTop: 'var(--space-4)' }}>{PACKAGE_LABELS[recommendedId]}</h2>
-                <p style={{ marginTop: 'var(--space-4)' }}>A starting point. Our team reviews every request and adjusts it before your quote goes out.</p>
+                <p style={{ marginTop: 'var(--space-4)' }}>{t('quote.rec.body')}</p>
               </div>
             )}
 
             <form style={{ marginTop: 'var(--space-7)' }} onSubmit={handleSubmit}>
-              {stepLabel('Your details')}
+              {stepLabel()}
               <div className="field-row">
                 <div className="field">
-                  <label className="label label-xs" htmlFor="q-name">Name</label>
+                  <label className="label label-xs" htmlFor="q-name">{t('quote.name')}</label>
                   <input id="q-name" required value={contact.name} onChange={setField('name')} />
                 </div>
                 <div className="field">
-                  <label className="label label-xs" htmlFor="q-email">Email</label>
+                  <label className="label label-xs" htmlFor="q-email">{t('quote.email')}</label>
                   <input id="q-email" type="email" required value={contact.email} onChange={setField('email')} />
                 </div>
               </div>
               <div className="field-row">
                 <div className="field">
-                  <label className="label label-xs" htmlFor="q-phone">Phone</label>
+                  <label className="label label-xs" htmlFor="q-phone">{t('quote.phone')}</label>
                   <input id="q-phone" type="tel" required value={contact.phone} onChange={setField('phone')} />
                 </div>
                 <div className="field">
-                  <label className="label label-xs" htmlFor="q-date">Event date (optional)</label>
+                  <label className="label label-xs" htmlFor="q-date">{t('quote.date')}</label>
                   <input id="q-date" type="date" value={contact.eventDate} onChange={setField('eventDate')} />
                 </div>
               </div>
               <div className="field">
-                <label className="label label-xs" htmlFor="q-location">Location</label>
-                <input id="q-location" placeholder="Brussels, or elsewhere in Belgium" value={contact.location} onChange={setField('location')} />
+                <label className="label label-xs" htmlFor="q-location">{t('quote.location')}</label>
+                <input id="q-location" placeholder={t('quote.location.placeholder')} value={contact.location} onChange={setField('location')} />
               </div>
               <div className="field">
-                <label className="label label-xs" htmlFor="q-notes">Anything else we should know? (optional)</label>
+                <label className="label label-xs" htmlFor="q-notes">{t('quote.notes')}</label>
                 <textarea id="q-notes" value={contact.notes} onChange={setField('notes')} />
               </div>
               <Honeypot value={trap} onChange={setTrap} />
               <button className="btn btn-primary" type="submit" disabled={submitState === 'sending'}>
-                {submitState === 'sending' ? 'Sending' : 'Send request'}
+                {submitState === 'sending' ? t('quote.sending') : t('quote.send')}
               </button>
-              {submitState === 'error' && <p className="form-status error">That didn't send. Try again, or email us directly.</p>}
+              {submitState === 'error' && <p className="form-status error">{t('quote.error')}</p>}
             </form>
           </>
         )}
 
         <div className="quote-nav">
           <button type="button" className="btn btn-ghost" onClick={back} disabled={step === 0}>
-            ← Back
+            {t('quote.back')}
           </button>
           {step < totalSteps - 1 && (
             <button type="button" className="btn btn-primary" onClick={next} disabled={!canAdvance}>
-              Continue →
+              {t('quote.continue')}
             </button>
           )}
         </div>

@@ -4,20 +4,25 @@ import { supabase } from '../lib/supabaseClient.js';
 import { HalfWorld } from '../components/ui.jsx';
 import { useLang } from '../lib/i18n.jsx';
 
-const DATE_FMT = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', timeZone: 'Europe/Brussels' });
-const shortDate = (d) => DATE_FMT.format(new Date(d)).replace('/', '.');
+const DATE_OPTS = { day: '2-digit', month: '2-digit', timeZone: 'Europe/Brussels' };
+const cache = new Map();
+const shortDate = (d, locale = 'en-GB') => {
+  if (!cache.has(locale)) cache.set(locale, new Intl.DateTimeFormat(locale, DATE_OPTS));
+  return cache.get(locale).format(new Date(d)).replace('/', '.');
+};
 
 // ReleaseCard per the DS brief: square colour artwork, catalogue no. in label
 // style, title in display 28px, artist in body, format tags.
 function ReleaseCard({ release }) {
+  const { t, locale } = useLang();
   const upcoming = release.release_date && new Date(release.release_date) > new Date();
   const href = upcoming ? release.presave_url : release.listen_url;
   return (
     <article className="card release-card">
       <div className="release-art">
-        {release.artwork_url ? <img src={release.artwork_url} alt={`${release.title} artwork`} loading="lazy" /> : <span className="label label-xs muted">{release.id}</span>}
+        {release.artwork_url ? <img src={release.artwork_url} alt={t('records.artwork.alt', { title: release.title })} loading="lazy" /> : <span className="label label-xs muted">{release.id}</span>}
       </div>
-      <div className="label label-xs accent">{release.id}{release.release_date ? ` · ${shortDate(release.release_date)}` : ''}</div>
+      <div className="label label-xs accent">{release.id}{release.release_date ? ` · ${shortDate(release.release_date, locale)}` : ''}</div>
       <h3 className="release-title">{release.title}</h3>
       <p className="muted">{release.artist}</p>
       {release.formats?.length > 0 && (
@@ -27,7 +32,7 @@ function ReleaseCard({ release }) {
       )}
       {href && (
         <a className="btn btn-ghost" style={{ marginTop: 'var(--space-5)' }} href={href} target="_blank" rel="noreferrer">
-          {upcoming ? 'Pre-save →' : 'Listen →'}
+          {upcoming ? t('records.card.presave') : t('records.card.listen')}
         </a>
       )}
     </article>
@@ -38,6 +43,7 @@ function DemoForm() {
   const [form, setForm] = useState({ artistName: '', email: '', link: '', genre: '', message: '' });
   const [status, setStatus] = useState('idle');
   const [trap, setTrap] = useState('');
+  const { t } = useLang();
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
   const submit = async (e) => {
@@ -58,9 +64,9 @@ function DemoForm() {
   if (status === 'sent') {
     return (
       <div className="field-block">
-        <div className="label label-xs">Demo received</div>
-        <h2 style={{ marginTop: 'var(--space-4)' }}>Thanks. We'll listen.</h2>
-        <p style={{ marginTop: 'var(--space-4)' }}>If it's a fit for the label, we'll be in touch.</p>
+        <div className="label label-xs">{t('demo.sent.tag')}</div>
+        <h2 style={{ marginTop: 'var(--space-4)' }}>{t('demo.sent.title')}</h2>
+        <p style={{ marginTop: 'var(--space-4)' }}>{t('demo.sent.body')}</p>
       </div>
     );
   }
@@ -69,37 +75,39 @@ function DemoForm() {
     <form onSubmit={submit}>
       <div className="field-row">
         <div className="field">
-          <label className="label label-xs" htmlFor="d-name">Artist name</label>
+          <label className="label label-xs" htmlFor="d-name">{t('demo.artist')}</label>
           <input id="d-name" required value={form.artistName} onChange={set('artistName')} />
         </div>
         <div className="field">
-          <label className="label label-xs" htmlFor="d-email">Email</label>
+          <label className="label label-xs" htmlFor="d-email">{t('demo.email')}</label>
           <input id="d-email" type="email" required value={form.email} onChange={set('email')} />
         </div>
       </div>
       <div className="field-row">
         <div className="field">
-          <label className="label label-xs" htmlFor="d-link">Private link</label>
-          <input id="d-link" type="url" required placeholder="SoundCloud, Dropbox, Drive" value={form.link} onChange={set('link')} />
+          <label className="label label-xs" htmlFor="d-link">{t('demo.link')}</label>
+          <input id="d-link" type="url" required placeholder={t('demo.link.placeholder')} value={form.link} onChange={set('link')} />
         </div>
         <div className="field">
-          <label className="label label-xs" htmlFor="d-genre">Genre</label>
-          <input id="d-genre" placeholder="Afro House, Melodic Techno" value={form.genre} onChange={set('genre')} />
+          <label className="label label-xs" htmlFor="d-genre">{t('demo.genre')}</label>
+          <input id="d-genre" placeholder={t('demo.genre.placeholder')} value={form.genre} onChange={set('genre')} />
         </div>
       </div>
       <div className="field">
-        <label className="label label-xs" htmlFor="d-msg">About the track (optional)</label>
+        <label className="label label-xs" htmlFor="d-msg">{t('demo.about')}</label>
         <textarea id="d-msg" value={form.message} onChange={set('message')} />
       </div>
       <Honeypot value={trap} onChange={setTrap} />
-      <button className="btn btn-primary" type="submit" disabled={status === 'sending'}>{status === 'sending' ? 'Sending' : 'Send demo'}</button>
-      {status === 'error' && <p className="form-status error">That didn't send. Try again in a moment.</p>}
+      <button className="btn btn-primary" type="submit" disabled={status === 'sending'}>{status === 'sending' ? t('demo.sending') : t('demo.send')}</button>
+      {status === 'error' && <p className="form-status error">{t('demo.error')}</p>}
     </form>
   );
 }
 
+const COLS = ['1', '2', '3'];
+
 export default function Records({ releases, go }) {
-  const { t } = useLang();
+  const { t, locale } = useLang();
   const [format, setFormat] = useState(null);
   const now = new Date();
   const upcoming = releases.filter((r) => r.release_date && new Date(r.release_date) > now);
@@ -115,18 +123,18 @@ export default function Records({ releases, go }) {
         <section className="hero">
           <div className="wrap hero-inner release-hero">
             <div>
-              <div className="eyebrow label"><HalfWorld size={16} />OTW Records · {upcoming.includes(featured) ? 'Out soon' : 'Latest release'}</div>
+              <div className="eyebrow label"><HalfWorld size={16} />{t('records.hero.tag')} · {upcoming.includes(featured) ? t('records.hero.soon') : t('records.hero.latest')}</div>
               <div className="label accent">{featured.id}</div>
               <h1 style={{ marginTop: 'var(--space-4)' }}>{featured.title}</h1>
-              <p className="lead">{featured.artist}{featured.release_date ? ` · ${shortDate(featured.release_date)}` : ''}</p>
+              <p className="lead">{featured.artist}{featured.release_date ? ` · ${shortDate(featured.release_date, locale)}` : ''}</p>
               <div className="actions">
-                {featured.listen_url && !upcoming.includes(featured) && <a className="btn btn-primary" href={featured.listen_url} target="_blank" rel="noreferrer">Listen</a>}
-                {featured.presave_url && upcoming.includes(featured) && <a className="btn btn-primary" href={featured.presave_url} target="_blank" rel="noreferrer">Pre-save</a>}
-                <button className="btn btn-secondary" onClick={() => scrollTo('demos')}>Send a demo</button>
+                {featured.listen_url && !upcoming.includes(featured) && <a className="btn btn-primary" href={featured.listen_url} target="_blank" rel="noreferrer">{t('records.hero.listen')}</a>}
+                {featured.presave_url && upcoming.includes(featured) && <a className="btn btn-primary" href={featured.presave_url} target="_blank" rel="noreferrer">{t('records.hero.presave')}</a>}
+                <button className="btn btn-secondary" onClick={() => scrollTo('demos')}>{t('records.hero.demo')}</button>
               </div>
             </div>
             <div className="release-art release-art-lg">
-              {featured.artwork_url ? <img src={featured.artwork_url} alt={`${featured.title} artwork`} /> : <span className="label muted">{featured.id}</span>}
+              {featured.artwork_url ? <img src={featured.artwork_url} alt={t('records.artwork.alt', { title: featured.title })} /> : <span className="label muted">{featured.id}</span>}
             </div>
           </div>
         </section>
@@ -134,11 +142,11 @@ export default function Records({ releases, go }) {
         <section className="hero hero-division">
           <div className="hero-rise" aria-hidden="true" />
           <div className="wrap hero-inner">
-            <div className="eyebrow label"><HalfWorld size={16} />OTW Records</div>
-            <h1>Music released under the OTW name.</h1>
-            <p className="lead">Tracks, EPs and distribution for artists in and around the crew. The catalogue starts at OTW001.</p>
+            <div className="eyebrow label"><HalfWorld size={16} />{t('records.hero.tag')}</div>
+            <h1>{t('records.empty.title')}</h1>
+            <p className="lead">{t('records.empty.lead')}</p>
             <div className="actions">
-              <button className="btn btn-primary" onClick={() => scrollTo('demos')}>Send a demo</button>
+              <button className="btn btn-primary" onClick={() => scrollTo('demos')}>{t('records.hero.demo')}</button>
             </div>
           </div>
         </section>
@@ -146,16 +154,16 @@ export default function Records({ releases, go }) {
 
       {featured?.presave_url && upcoming.includes(featured) && (
         <a className="cta-bar" href={featured.presave_url} target="_blank" rel="noreferrer">
-          <span>Pre-save · {featured.id}</span>
-          <span>{shortDate(featured.release_date)} →</span>
+          <span>{t('records.presave.bar', { id: featured.id })}</span>
+          <span>{shortDate(featured.release_date, locale)} →</span>
         </a>
       )}
 
       <section className="section">
         <div className="wrap">
-          <div className="section-head"><h2>Catalogue</h2></div>
+          <div className="section-head"><h2>{t('records.catalogue.title')}</h2></div>
           {releases.length === 0 ? (
-            <p className="empty">OTW001 is on the way. Sign up to the newsletter below to hear it first.</p>
+            <p className="empty">{t('records.catalogue.empty')}</p>
           ) : (
             <>
               {formats.length > 1 && (
@@ -174,15 +182,11 @@ export default function Records({ releases, go }) {
       <section className="section">
         <div className="wrap">
           <div className="cells cells-3">
-            {[
-              ['For artists', 'Open to OTW artists and outside submissions.'],
-              ['What we handle', 'Distribution, artwork and release scheduling.'],
-              ['Where it goes', 'Releases get played out at OTW nights and by the roster.'],
-            ].map(([t, b]) => (
-              <div key={t}>
+            {COLS.map((n) => (
+              <div key={n}>
                 <HalfWorld size={24} />
-                <div className="step-title label">{t}</div>
-                <p className="muted">{b}</p>
+                <div className="step-title label">{t(`records.cols.${n}.title`)}</div>
+                <p className="muted">{t(`records.cols.${n}.body`)}</p>
               </div>
             ))}
           </div>
@@ -192,10 +196,10 @@ export default function Records({ releases, go }) {
       <section className="section" id="demos" style={{ scrollMarginTop: 80 }}>
         <div className="wrap split">
           <div>
-            <div className="eyebrow label"><HalfWorld size={16} />Demos</div>
-            <h2>Send us your music</h2>
+            <div className="eyebrow label"><HalfWorld size={16} />{t('records.demos.tag')}</div>
+            <h2>{t('records.demos.title')}</h2>
             <p className="body" style={{ marginTop: 'var(--space-5)' }}>
-              Private links only, no attachments. Finished or near-finished tracks. We listen to everything and reply if it's a fit.
+              {t('records.demos.body')}
             </p>
             {go && (
               <button className="btn btn-ghost" style={{ marginTop: 'var(--space-5)' }} onClick={() => go('academy')} data-entity="academy">

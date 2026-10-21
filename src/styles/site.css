@@ -119,7 +119,8 @@ button.tag[aria-pressed="true"] { background: var(--accent); border-color: var(-
 .footer-bottom a { text-decoration: none; }
 .footer-bottom button { text-transform: inherit; letter-spacing: inherit; }
 .footer-bottom a:hover, .footer-bottom button:hover { color: var(--accent); }
-.footer-socials { display: flex; gap: var(--space-5); }
+/* Wraps, so four links (and longer words in French and Dutch) never push the page sideways on a phone. */
+.footer-socials { display: flex; flex-wrap: wrap; gap: var(--space-5); }
 @media (max-width: 1100px) { .footer-grid { grid-template-columns: repeat(3, 1fr); } .footer-brand, .footer-news { grid-column: 1 / -1; } }
 @media (max-width: 640px) { .footer-grid { grid-template-columns: 1fr; } }
 

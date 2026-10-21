@@ -38,7 +38,7 @@ export default function Header({ route, go }) {
           <Logo entity={entity} />
         </button>
 
-        <nav className="header-nav" aria-label="Main">
+        <nav className="header-nav" aria-label={t('nav.main')}>
           {NAV.map(([key]) => (
             <button
               key={key}
@@ -65,14 +65,14 @@ export default function Header({ route, go }) {
       </div>
 
       {open && (
-        <div className="overlay" role="dialog" aria-modal="true" aria-label="Menu">
+        <div className="overlay" role="dialog" aria-modal="true" aria-label={t('nav.menu')}>
           <div className="wrap overlay-top">
             <span className="header-logo"><Logo entity={entity} /></span>
             <button className="header-menu-btn" style={{ display: 'inline-flex' }} onClick={() => setOpen(false)} aria-label={t('nav.menu.close')}>
               <Icon name="x" />
             </button>
           </div>
-          <nav className="wrap overlay-nav" aria-label="Mobile">
+          <nav className="wrap overlay-nav" aria-label={t('nav.mobile')}>
             {NAV.map(([key]) => (
               <button key={key} data-entity={key === 'about' ? 'main' : key} onClick={() => nav(key)}>
                 <HalfWorld size={24} />

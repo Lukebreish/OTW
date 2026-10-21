@@ -2,9 +2,16 @@ import { useMemo, useState } from 'react';
 import { supabase } from '../lib/supabaseClient.js';
 import { HalfWorld } from '../components/ui.jsx';
 import Honeypot from '../components/Honeypot.jsx';
+import { useLang } from '../lib/i18n.jsx';
 
-const AVAILABILITY = ['Weekends only', 'Weekdays too', 'Flexible', 'Limited, ask me'];
-const ROLES = ['DJ', 'DJ/Producer', 'Singer'];
+// [value stored in the database, translation key].
+const AVAILABILITY = [
+  ['Weekends only', 'weekends'],
+  ['Weekdays too', 'weekdays'],
+  ['Flexible', 'flexible'],
+  ['Limited, ask me', 'limited'],
+];
+const ROLES = [['DJ', 'dj'], ['DJ/Producer', 'djproducer'], ['Singer', 'singer']];
 const MAX_PHOTO = 5 * 1024 * 1024;
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -17,15 +24,17 @@ export default function Join() {
   const [status, setStatus] = useState('idle');
   const [trap, setTrap] = useState('');
   const [photo, setPhoto] = useState(null);
+  // Holds a translation key, so the message follows the language switch.
   const [photoError, setPhotoError] = useState('');
   const preview = useMemo(() => (photo ? URL.createObjectURL(photo) : ''), [photo]);
+  const { t } = useLang();
 
   const pickPhoto = (e) => {
     const file = e.target.files?.[0];
     setPhotoError('');
     if (!file) { setPhoto(null); return; }
-    if (!PHOTO_TYPES.includes(file.type)) { setPhotoError('Use a JPG, PNG or WebP image.'); setPhoto(null); return; }
-    if (file.size > MAX_PHOTO) { setPhotoError('That photo is over 5 MB. Pick a smaller one.'); setPhoto(null); return; }
+    if (!PHOTO_TYPES.includes(file.type)) { setPhotoError('join.photo.type'); setPhoto(null); return; }
+    if (file.size > MAX_PHOTO) { setPhotoError('join.photo.size'); setPhoto(null); return; }
     setPhoto(file);
   };
 
@@ -35,7 +44,7 @@ export default function Join() {
     e.preventDefault();
     if (trap) { setStatus('sent'); return; }
     if (!form.name || !form.email || !form.djName) return;
-    if (!photo) { setPhotoError('Add a photo of you.'); return; }
+    if (!photo) { setPhotoError('join.photo.required'); return; }
     setStatus('sending');
     const ext = photo.type === 'image/png' ? 'png' : photo.type === 'image/webp' ? 'webp' : 'jpg';
     const path = `applications/${crypto.randomUUID()}.${ext}`;
@@ -69,11 +78,10 @@ export default function Join() {
     return (
       <section className="section">
         <div className="wrap wrap-narrow">
-          <div className="eyebrow label"><HalfWorld size={16} />Application sent</div>
-          <h1>Got it. Thanks.</h1>
+          <div className="eyebrow label"><HalfWorld size={16} />{t('join.sent.tag')}</div>
+          <h1>{t('join.sent.title')}</h1>
           <p className="lead" style={{ marginTop: 'var(--space-5)' }}>
-            We listen to everyone who applies. If it's a fit, we'll be in touch to build your
-            profile and get you on the site.
+            {t('join.sent.body')}
           </p>
         </div>
       </section>
@@ -83,118 +91,118 @@ export default function Join() {
   return (
     <section className="section">
       <div className="wrap wrap-narrow">
-        <div className="eyebrow label"><HalfWorld size={16} />OTW Academy · Artists</div>
-        <h1>Join OTW</h1>
+        <div className="eyebrow label"><HalfWorld size={16} />{t('join.tag')}</div>
+        <h1>{t('join.title')}</h1>
         <p className="lead" style={{ marginTop: 'var(--space-5)' }}>
-          A network of artists we vouch for. Tell us what you play and where you've played it.
+          {t('join.lead')}
         </p>
 
         <form style={{ marginTop: 'var(--space-8)' }} onSubmit={handleSubmit}>
           <div className="field-row">
             <div className="field">
-              <label className="label label-xs" htmlFor="j-name">Your name</label>
+              <label className="label label-xs" htmlFor="j-name">{t('join.name')}</label>
               <input id="j-name" required value={form.name} onChange={set('name')} />
             </div>
             <div className="field">
-              <label className="label label-xs" htmlFor="j-email">Email</label>
+              <label className="label label-xs" htmlFor="j-email">{t('join.email')}</label>
               <input id="j-email" type="email" required value={form.email} onChange={set('email')} />
             </div>
           </div>
 
           <div className="field-row">
             <div className="field">
-              <label className="label label-xs" htmlFor="j-djname">Artist name</label>
+              <label className="label label-xs" htmlFor="j-djname">{t('join.djname')}</label>
               <input id="j-djname" required value={form.djName} onChange={set('djName')} />
             </div>
             <div className="field">
-              <label className="label label-xs" htmlFor="j-role">Role</label>
+              <label className="label label-xs" htmlFor="j-role">{t('join.role')}</label>
               <select id="j-role" value={form.role} onChange={set('role')}>
-                <option value="">Select one</option>
-                {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                <option value="">{t('join.select')}</option>
+                {ROLES.map(([value, key]) => <option key={value} value={value}>{t(`join.role.${key}`)}</option>)}
               </select>
             </div>
           </div>
 
           <div className="field">
-            <label className="label label-xs" htmlFor="j-photo">Your photo (JPG, PNG or WebP, up to 5 MB)</label>
+            <label className="label label-xs" htmlFor="j-photo">{t('join.photo')}</label>
             <input id="j-photo" type="file" accept="image/jpeg,image/png,image/webp" required onChange={pickPhoto} />
-            {preview && <img src={preview} alt="Your photo preview" style={{ marginTop: 'var(--space-3)', width: 160, height: 160, objectFit: 'cover' }} />}
-            {photoError && <p className="form-status error">{photoError}</p>}
+            {preview && <img src={preview} alt={t('join.photo.alt')} style={{ marginTop: 'var(--space-3)', width: 160, height: 160, objectFit: 'cover' }} />}
+            {photoError && <p className="form-status error">{t(photoError)}</p>}
           </div>
 
           <div className="field-row">
             <div className="field">
-              <label className="label label-xs" htmlFor="j-location">Location</label>
+              <label className="label label-xs" htmlFor="j-location">{t('join.location')}</label>
               <input id="j-location" value={form.location} onChange={set('location')} />
             </div>
             <div className="field">
-              <label className="label label-xs" htmlFor="j-years">Years playing</label>
+              <label className="label label-xs" htmlFor="j-years">{t('join.years')}</label>
               <input id="j-years" type="number" min="0" value={form.yearsExperience} onChange={set('yearsExperience')} />
             </div>
           </div>
 
           <div className="field">
-            <label className="label label-xs" htmlFor="j-genres">Genres (comma separated)</label>
-            <input id="j-genres" placeholder="Afro House, Tech House" value={form.genres} onChange={set('genres')} />
+            <label className="label label-xs" htmlFor="j-genres">{t('join.genres')}</label>
+            <input id="j-genres" placeholder={t('join.genres.placeholder')} value={form.genres} onChange={set('genres')} />
           </div>
 
           <div className="field">
-            <label className="label label-xs" htmlFor="j-bio">Bio</label>
-            <textarea id="j-bio" placeholder="Who you are, what you play, what a set with you feels like" value={form.bio} onChange={set('bio')} />
+            <label className="label label-xs" htmlFor="j-bio">{t('join.bio')}</label>
+            <textarea id="j-bio" placeholder={t('join.bio.placeholder')} value={form.bio} onChange={set('bio')} />
           </div>
 
           <div className="field-row">
             <div className="field">
-              <label className="label label-xs" htmlFor="j-ig">Instagram</label>
+              <label className="label label-xs" htmlFor="j-ig">{t('join.instagram')}</label>
               <input id="j-ig" placeholder="https://instagram.com/…" value={form.instagram} onChange={set('instagram')} />
             </div>
             <div className="field">
-              <label className="label label-xs" htmlFor="j-sc">SoundCloud</label>
+              <label className="label label-xs" htmlFor="j-sc">{t('join.soundcloud')}</label>
               <input id="j-sc" placeholder="https://soundcloud.com/…" value={form.soundcloud} onChange={set('soundcloud')} />
             </div>
           </div>
 
           <div className="field-row">
             <div className="field">
-              <label className="label label-xs" htmlFor="j-mc">Mixcloud</label>
+              <label className="label label-xs" htmlFor="j-mc">{t('join.mixcloud')}</label>
               <input id="j-mc" value={form.mixcloud} onChange={set('mixcloud')} />
             </div>
             <div className="field">
-              <label className="label label-xs" htmlFor="j-sp">Spotify</label>
+              <label className="label label-xs" htmlFor="j-sp">{t('join.spotify')}</label>
               <input id="j-sp" value={form.spotify} onChange={set('spotify')} />
             </div>
           </div>
 
           <div className="field-row">
             <div className="field">
-              <label className="label label-xs" htmlFor="j-lang">Languages (comma separated)</label>
-              <input id="j-lang" placeholder="English, French" value={form.languages} onChange={set('languages')} />
+              <label className="label label-xs" htmlFor="j-lang">{t('join.languages')}</label>
+              <input id="j-lang" placeholder={t('join.languages.placeholder')} value={form.languages} onChange={set('languages')} />
             </div>
             <div className="field">
-              <label className="label label-xs" htmlFor="j-availability">Availability</label>
+              <label className="label label-xs" htmlFor="j-availability">{t('join.availability')}</label>
               <select id="j-availability" value={form.availability} onChange={set('availability')}>
-                <option value="">Select one</option>
-                {AVAILABILITY.map((a) => <option key={a} value={a}>{a}</option>)}
+                <option value="">{t('join.select')}</option>
+                {AVAILABILITY.map(([value, key]) => <option key={value} value={value}>{t(`join.avail.${key}`)}</option>)}
               </select>
             </div>
           </div>
 
           <div className="field">
-            <label className="label label-xs" htmlFor="j-rate">Rate (optional, kept internal)</label>
+            <label className="label label-xs" htmlFor="j-rate">{t('join.rate')}</label>
             <input id="j-rate" value={form.rate} onChange={set('rate')} />
           </div>
 
           <div className="field">
-            <label className="label label-xs" htmlFor="j-notes">Anything else · events played, press, links</label>
+            <label className="label label-xs" htmlFor="j-notes">{t('join.notes')}</label>
             <textarea id="j-notes" value={form.notes} onChange={set('notes')} />
           </div>
 
           <Honeypot value={trap} onChange={setTrap} />
           <button className="btn btn-primary" type="submit" disabled={status === 'sending'}>
-            {status === 'sending' ? 'Sending' : 'Send application'}
+            {status === 'sending' ? t('join.sending') : t('join.send')}
           </button>
           {status === 'error' && (
-            <p className="form-status error">That didn't send. Try again in a moment.</p>
+            <p className="form-status error">{t('join.error')}</p>
           )}
         </form>
       </div>
