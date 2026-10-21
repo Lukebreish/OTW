@@ -29,7 +29,7 @@ export default {
   'footer.records.releases': 'Releases',
   'footer.records.demo': 'Submit a demo',
   'footer.news.title': 'Newsletter',
-  'footer.news.body': 'Nights, courses and releases. Once a month.',
+  'footer.news.body': 'Nights, courses and releases.',
   'footer.news.button': 'Sign up',
   'footer.news.done': "You're on the list.",
   'footer.privacy': 'Privacy',
