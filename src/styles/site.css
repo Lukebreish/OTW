@@ -46,26 +46,30 @@ h3 { font-size: var(--text-xl); }
 /* ---------- Buttons ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: flex-start; gap: var(--space-3);
-  height: var(--control-height); padding: 0 var(--space-5);
+  min-height: var(--control-height); padding: var(--space-3) var(--space-5);
   font-family: var(--font-display); font-weight: 700; font-size: var(--text-sm);
   letter-spacing: var(--tracking-label); text-transform: uppercase; text-decoration: none;
-  border: var(--rule) solid transparent; border-radius: 0; white-space: nowrap;
+  border: var(--rule) solid transparent; border-radius: 0;
+  /* A long label wraps instead of forcing the page sideways. Short labels are
+     unchanged: they never need to wrap, and min-height keeps the same box.
+     Buttons used to be nowrap with a fixed height, so a sentence-length label
+     grew wider than its column — French and Dutch hit this where English did
+     not. */
+  white-space: normal;
   transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out);
 }
-.btn-sm { height: 40px; padding: 0 var(--space-4); font-size: var(--text-xs); }
+.btn-sm { min-height: 40px; padding: var(--space-2) var(--space-4); font-size: var(--text-xs); }
 .btn-primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 .btn-primary:hover { background: var(--otw-ink); color: var(--accent); }
 .btn-secondary { border-color: var(--rule-color); color: var(--text-primary); }
 .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
-.btn-ghost { padding: 0; border: 0; color: var(--text-primary); }
+.btn-ghost { min-height: 0; padding: 0; border: 0; color: var(--text-primary); }
+/* The header's own labels stay on one line: they are short, the row is flex
+   rather than a grid column, and a wrapped CTA makes the whole header taller. */
+.header-nav button, .header-cta, .overlay-nav button { white-space: nowrap; }
 .btn-ghost:hover { color: var(--accent); }
 .btn:active { background: var(--otw-grey-900); }
 .btn-ghost:active { background: none; }
-/* On phones a long label wraps instead of forcing the page sideways. Buttons
-   are nowrap by default, which made a long one wider than the screen and
-   dragged its whole grid column with it. Longer French and Dutch labels hit
-   this on more pages than English did. */
-@media (max-width: 640px) { .btn { white-space: normal; height: auto; min-height: var(--control-height); padding-top: var(--space-3); padding-bottom: var(--space-3); } }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
 .btn:disabled:hover { background: inherit; }
 .btn-primary:disabled:hover { background: var(--accent); color: var(--on-accent); }

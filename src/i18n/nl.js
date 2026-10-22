@@ -12,7 +12,7 @@ export default {
   'nav.academy': 'Academy',
   'nav.records': 'Records',
   'nav.about': 'Over ons',
-  'nav.quote': 'Offerte aanvragen',
+  'nav.quote': 'Offerte',
   'nav.menu.open': 'Menu openen',
   'nav.menu.close': 'Menu sluiten',
   'nav.home': 'Off The World, home',
