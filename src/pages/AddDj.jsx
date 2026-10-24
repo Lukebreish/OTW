@@ -64,7 +64,7 @@ function GenrePicker({ value, onChange }) {
 
 export default function AddDj() {
   const token = useMemo(tokenFromHash, []);
-  const [linkState, setLinkState] = useState('checking'); // checking | ok | bad
+  const [linkState, setLinkState] = useState('checking'); // checking | ok | bad | offline
   const [form, setForm] = useState({ djName: '', location: '', years: '', role: '', email: '', phone: '' });
   const [genres, setGenres] = useState([]);
   const [photo, setPhoto] = useState(null);
@@ -76,7 +76,9 @@ export default function AddDj() {
 
   useEffect(() => {
     if (!/^[0-9a-f-]{36}$/i.test(token)) { setLinkState('bad'); return; }
-    supabase.rpc('check_dj_invite', { p_token: token }).then(({ data, error: err }) => setLinkState(!err && data ? 'ok' : 'bad'));
+    supabase.rpc('check_dj_invite', { p_token: token })
+      .then(({ data, error: err }) => setLinkState(err ? 'offline' : data ? 'ok' : 'bad'))
+      .catch(() => setLinkState('offline'));
   }, [token]);
 
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
@@ -114,6 +116,18 @@ export default function AddDj() {
   };
 
   if (linkState === 'checking') return <div className="wrap status-page label">Loading</div>;
+
+  if (linkState === 'offline') {
+    return (
+      <section className="section">
+        <div className="wrap wrap-narrow">
+          <div className="eyebrow label"><HalfWorld size={16} />OTW Artists</div>
+          <h1>Couldn't connect.</h1>
+          <p className="lead" style={{ marginTop: 'var(--space-5)' }}>Check your connection and reload. If it keeps failing, try mobile data or another network.</p>
+        </div>
+      </section>
+    );
+  }
 
   if (linkState === 'bad') {
     return (
